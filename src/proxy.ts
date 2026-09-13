@@ -11,10 +11,6 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  if (request.nextUrl.pathname === "/iniciar-sesion" && user) {
-    return NextResponse.redirect(new URL("/panel", request.url));
-  }
-
   return response;
 }
 

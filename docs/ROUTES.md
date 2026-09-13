@@ -1,6 +1,18 @@
 # Mapa de rutas
 
-Las rutas son objetivo arquitectónico. En Fase 0 solo existen `/`, `/iniciar-sesion` y el shell protegido `/panel`.
+Las rutas son objetivo arquitectónico. En Fase 1 están implementados el acceso y el shell protegido; los módulos operativos siguen pendientes.
+
+## Identidad y acceso
+
+| Ruta                     | Acceso                                 | Estado             |
+| ------------------------ | -------------------------------------- | ------------------ |
+| `/iniciar-sesion`        | Público                                | Implementada       |
+| `/recuperar-acceso`      | Público                                | Implementada       |
+| `/auth/callback`         | Enlace firmado de Supabase             | Implementada       |
+| `/actualizar-contrasena` | Sesión de recuperación                 | Implementada       |
+| `/verificar-mfa`         | Sesión AAL1 con factor registrado      | Implementada       |
+| `/panel`                 | Perfil activo; AAL2 cuando corresponde | Shell implementado |
+| `/panel/seguridad`       | Perfil activo                          | Implementada       |
 
 ## Sitio público
 

@@ -2,11 +2,11 @@
 
 Cada fase termina con revisión, typecheck, lint, tests, build, pruebas responsive y controles de seguridad proporcionales al riesgo. Ninguna fase despliega producción automáticamente.
 
-## Fase 0 — Fundación (actual)
+## Fase 0 — Fundación (completada)
 
 Arquitectura, modelo relacional, RLS, permisos, documentos privados, tokens visuales, shells, validación y base de testing. Sin módulos funcionales.
 
-## Fase 1 — Identidad, entornos y autenticación
+## Fase 1 — Identidad, entornos y autenticación (implementación local completada)
 
 - Conectar proyectos Supabase de desarrollo/staging.
 - Aplicar y probar migraciones/RLS.
@@ -15,6 +15,8 @@ Arquitectura, modelo relacional, RLS, permisos, documentos privados, tokens visu
 - CI con secret scanning y quality gates.
 
 Criterio de salida: usuarios de prueba por rol; matriz RLS automatizada; acceso no autorizado bloqueado.
+
+El código y los controles locales están completos. La parte externa del criterio (proyectos Supabase, usuarios reales por rol y matriz RLS remota) permanece pendiente de credenciales autorizadas.
 
 ## Fase 2 — Sitio público esencial
 

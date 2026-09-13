@@ -6,12 +6,14 @@ import { cookies } from "next/headers";
 import { getPublicSupabaseEnv } from "@/lib/env/server";
 
 export async function createClient() {
+  // Read the request-bound cookie store before validating environment values so
+  // Next.js always treats callers as dynamic and never prerenders auth routes.
+  const cookieStore = await cookies();
   const parsed = getPublicSupabaseEnv();
   if (!parsed.success) {
     throw new Error("Supabase public configuration is missing or invalid.");
   }
 
-  const cookieStore = await cookies();
   return createServerClient(
     parsed.data.NEXT_PUBLIC_SUPABASE_URL,
     parsed.data.NEXT_PUBLIC_SUPABASE_ANON_KEY,

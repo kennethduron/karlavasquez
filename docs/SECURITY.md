@@ -1,5 +1,13 @@
 # Seguridad
 
+## Identidad
+
+- No existe registro público; toda identidad nace invitada y sin acceso operativo.
+- El perfil debe estar activo y cada página privada revalida usuario, roles y permisos en el servidor.
+- Administradores y perfiles marcados con `mfa_required` necesitan una sesión AAL2.
+- La recuperación no revela si un correo existe y solo redirige hacia rutas internas.
+- El cliente recibe un DTO mínimo; la service role permanece exclusivamente server-side.
+
 ## Modelo de amenazas resumido
 
 Activos críticos: identidad de usuarios, datos de contacto, notas, expedientes, documentos y auditoría. Amenazas principales: acceso horizontal, elevación de privilegio, filtración de URLs, credenciales expuestas, upload malicioso, spam, doble submit y logs con información sensible.

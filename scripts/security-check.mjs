@@ -58,6 +58,9 @@ for (const file of sourceFiles) {
 
 const schema = read("supabase/migrations/202609130001_initial_schema.sql");
 const rls = read("supabase/migrations/202609130002_authorization_rls.sql");
+const authFoundation = read(
+  "supabase/migrations/202609130004_auth_foundation.sql",
+);
 const tables = [...schema.matchAll(/create table public\.([a-z_]+)/g)].map(
   ([, table]) => table,
 );
@@ -73,6 +76,23 @@ if (
   /create policy [^\n]+ on public\.audit_logs for (update|delete)/i.test(rls)
 ) {
   failures.push("Audit logs expose a mutable RLS policy.");
+}
+
+for (const requiredControl of [
+  "values (new.id, left(resolved_name, 120), 'invited')",
+  "revoke update on public.profiles from authenticated",
+  "grant update (display_name, locale, timezone, avatar_path, last_seen_at)",
+  "create or replace function public.get_my_permissions()",
+  "create or replace function public.record_auth_event(event_action text)",
+  "revoke all on function public.record_auth_event(text) from public, anon",
+]) {
+  if (!authFoundation.includes(requiredControl)) {
+    failures.push(`Missing Phase 1 auth control: ${requiredControl}`);
+  }
+}
+
+if (/grant update \([^)]*(status|mfa_required)/i.test(authFoundation)) {
+  failures.push("Authenticated users can update a protected profile column.");
 }
 
 if (failures.length) {
