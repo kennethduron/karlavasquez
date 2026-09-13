@@ -1,0 +1,212 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+    function currentUser() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function active() {
+      return signedIn() && currentUser().status == 'active';
+    }
+    function hasPermission(permission) {
+      return active() &&
+        (permission in currentUser().effectivePermissions ||
+          '*' in currentUser().effectivePermissions);
+    }
+    function canAccessCase(caseId) {
+      let legalCase = get(/databases/$(database)/documents/cases/$(caseId)).data;
+      return hasPermission('cases.view') &&
+        (hasPermission('cases.view_all') ||
+          legalCase.responsibleUserId == request.auth.uid ||
+          request.auth.uid in legalCase.assignedUserIds);
+    }
+    function immutable(keys) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(keys);
+    }
+
+    match /users/{userId} {
+      allow read: if active() &&
+        (request.auth.uid == userId || hasPermission('users.manage'));
+      allow update: if active() && request.auth.uid == userId &&
+        request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['displayName', 'locale', 'timezone', 'updatedAt']);
+      allow create, delete: if false;
+    }
+
+    match /roles/{roleId} {
+      allow read: if active();
+      allow create, update, delete: if hasPermission('roles.manage');
+    }
+    match /permissions/{permissionId} {
+      allow read: if active();
+      allow create, update, delete: if hasPermission('roles.manage');
+    }
+
+    match /consultations/{consultationId} {
+      allow read: if hasPermission('consultations.view');
+      allow create: if hasPermission('consultations.create') &&
+        request.resource.data.createdBy == request.auth.uid &&
+        (request.resource.data.responsibleUserId == request.auth.uid ||
+          hasPermission('consultations.assign'));
+      allow update: if hasPermission('consultations.edit') &&
+        immutable(['humanId', 'createdAt', 'createdBy']) &&
+        (request.resource.data.responsibleUserId == resource.data.responsibleUserId ||
+          hasPermission('consultations.assign'));
+      allow delete: if false;
+    }
+
+    match /clients/{clientId} {
+      allow read: if hasPermission('clients.view');
+      allow create: if hasPermission('clients.create') &&
+        request.resource.data.createdBy == request.auth.uid;
+      allow update: if hasPermission('clients.edit') &&
+        immutable(['humanId', 'createdAt', 'createdBy', 'sourceConsultationId']) &&
+        (request.resource.data.responsibleUserId == resource.data.responsibleUserId ||
+          hasPermission('clients.assign'));
+      allow delete: if false;
+    }
+
+    match /cases/{caseId} {
+      allow read: if canAccessCase(caseId);
+      allow create: if hasPermission('cases.create') &&
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.responsibleUserId == request.auth.uid &&
+        request.resource.data.assignedUserIds.hasOnly([request.auth.uid]);
+      allow update: if canAccessCase(caseId) && hasPermission('cases.edit') &&
+        immutable(['humanId', 'clientId', 'createdAt', 'createdBy']) &&
+        (request.resource.data.responsibleUserId == resource.data.responsibleUserId &&
+          request.resource.data.assignedUserIds == resource.data.assignedUserIds ||
+          hasPermission('cases.assign'));
+      allow delete: if false;
+    }
+
+    match /notes/{noteId} {
+      allow read: if
+        (resource.data.caseId != null && canAccessCase(resource.data.caseId)) ||
+        (resource.data.clientId != null && hasPermission('clients.view')) ||
+        (resource.data.consultationId != null && hasPermission('consultations.view'));
+      allow create: if request.resource.data.authorUid == request.auth.uid &&
+        ((request.resource.data.caseId != null && canAccessCase(request.resource.data.caseId) && hasPermission('cases.edit')) ||
+          (request.resource.data.clientId != null && hasPermission('clients.edit')) ||
+          (request.resource.data.consultationId != null && hasPermission('consultations.edit')));
+      allow update: if resource.data.authorUid == request.auth.uid &&
+        immutable(['caseId', 'clientId', 'consultationId', 'authorUid', 'createdAt']) &&
+        ((resource.data.caseId != null && canAccessCase(resource.data.caseId) && hasPermission('cases.edit')) ||
+          (resource.data.clientId != null && hasPermission('clients.edit')) ||
+          (resource.data.consultationId != null && hasPermission('consultations.edit')));
+      allow delete: if false;
+    }
+
+    match /documents/{documentId} {
+      allow read: if hasPermission('documents.view') &&
+        ((resource.data.caseId != null && canAccessCase(resource.data.caseId)) ||
+          (resource.data.caseId == null && resource.data.clientId != null && hasPermission('clients.view')));
+      allow create: if hasPermission('documents.upload') &&
+        request.resource.data.uploadedBy == request.auth.uid &&
+        ((request.resource.data.caseId != null && canAccessCase(request.resource.data.caseId)) ||
+          (request.resource.data.caseId == null && request.resource.data.clientId != null && hasPermission('clients.view')));
+      allow update: if hasPermission('documents.manage') &&
+        immutable(['caseId', 'clientId', 'storagePath', 'uploadedBy', 'createdAt']) &&
+        ((resource.data.caseId != null && canAccessCase(resource.data.caseId)) ||
+          (resource.data.caseId == null && resource.data.clientId != null && hasPermission('clients.view')));
+      allow delete: if false;
+    }
+
+    match /tasks/{taskId} {
+      allow read: if hasPermission('tasks.view') &&
+        (resource.data.assignedTo == request.auth.uid ||
+          resource.data.createdBy == request.auth.uid ||
+          resource.data.caseId == null || canAccessCase(resource.data.caseId));
+      allow create: if hasPermission('tasks.create') &&
+        request.resource.data.createdBy == request.auth.uid;
+      allow update: if hasPermission('tasks.edit') &&
+        immutable(['createdAt', 'createdBy', 'caseId']) &&
+        (resource.data.assignedTo == request.auth.uid ||
+          resource.data.createdBy == request.auth.uid ||
+          (resource.data.caseId != null && canAccessCase(resource.data.caseId)));
+      allow delete: if false;
+    }
+
+    match /events/{eventId} {
+      allow read: if hasPermission('events.view') &&
+        (resource.data.responsibleUserId == request.auth.uid ||
+          resource.data.caseId == null || canAccessCase(resource.data.caseId));
+      allow create: if hasPermission('events.create') &&
+        request.resource.data.createdBy == request.auth.uid;
+      allow update: if hasPermission('events.edit') &&
+        immutable(['createdAt', 'createdBy', 'caseId']) &&
+        (resource.data.responsibleUserId == request.auth.uid ||
+          (resource.data.caseId != null && canAccessCase(resource.data.caseId)));
+      allow delete: if false;
+    }
+
+    match /reminders/{reminderId} {
+      allow read, update: if active() && resource.data.recipientUid == request.auth.uid;
+      allow create: if active() && request.resource.data.recipientUid == request.auth.uid;
+      allow delete: if false;
+    }
+    match /notifications/{notificationId} {
+      allow read: if active() && resource.data.userId == request.auth.uid;
+      allow update: if active() && resource.data.userId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['readAt']);
+      allow create, delete: if false;
+    }
+    match /notificationPreferences/{preferenceId} {
+      allow read: if active() && resource.data.userId == request.auth.uid;
+      allow create: if active() && request.resource.data.userId == request.auth.uid;
+      allow update: if active() && resource.data.userId == request.auth.uid &&
+        request.resource.data.userId == request.auth.uid;
+      allow delete: if false;
+    }
+
+    match /auditLogs/{auditId} {
+      allow read: if hasPermission('audit.view');
+      allow create, update, delete: if false;
+    }
+
+    match /practiceAreas/{areaId} {
+      allow read: if resource.data.isActive == true || hasPermission('cms.view');
+      allow create, update, delete: if hasPermission('cms.edit');
+    }
+    match /legalServices/{serviceId} {
+      allow read: if resource.data.isActive == true || hasPermission('cms.view');
+      allow create, update, delete: if hasPermission('cms.edit');
+    }
+    match /articles/{articleId} {
+      allow read: if
+        (resource.data.status == 'published' && resource.data.publishedAt <= request.time) ||
+        hasPermission('cms.view');
+      allow create, update: if hasPermission('cms.edit');
+      allow delete: if false;
+    }
+    match /siteSettings/{settingId} {
+      allow read: if resource.data.isPublic == true || hasPermission('cms.view');
+      allow create, update: if hasPermission('settings.manage');
+      allow delete: if false;
+    }
+
+    match /contactSubmissions/{submissionId} {
+      allow read, write: if false;
+    }
+    match /documentCategories/{categoryId} {
+      allow read: if active();
+      allow create, update: if hasPermission('settings.manage');
+      allow delete: if false;
+    }
+    match /consents/{consentId} {
+      allow read, write: if false;
+    }
+    match /counters/{counterId} {
+      allow read, write: if false;
+    }
+    match /idempotencyKeys/{keyId} {
+      allow read, write: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

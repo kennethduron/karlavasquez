@@ -1,9 +1,8 @@
 import "server-only";
 
-import { redirect } from "next/navigation";
-
 import type { Permission } from "@/lib/permissions/permissions";
-import { createClient } from "@/lib/supabase/server";
+import { requireServerSession } from "@/lib/auth/session";
+import { redirect } from "next/navigation";
 
 export class AuthorizationError extends Error {
   constructor() {
@@ -13,19 +12,9 @@ export class AuthorizationError extends Error {
 }
 
 export async function requireUser(permission?: Permission) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) redirect("/iniciar-sesion");
-
-  if (permission) {
-    const { data: allowed, error } = await supabase.rpc("has_permission", {
-      requested_permission: permission,
-    });
-    if (error || !allowed) throw new AuthorizationError();
+  const session = await requireServerSession();
+  if (permission && !session.permissions.includes(permission)) {
+    redirect("/panel/sin-permiso");
   }
-
-  return { supabase, user };
+  return { user: { id: session.uid, email: session.email }, session };
 }

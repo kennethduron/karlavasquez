@@ -1,25 +1,15 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { updateSession } from "@/lib/supabase/proxy";
+import { SESSION_COOKIE_NAME } from "@/lib/auth/session-constants";
 
-export async function proxy(request: NextRequest) {
-  const { response, user } = await updateSession(request);
-
-  if (request.nextUrl.pathname.startsWith("/panel") && !user) {
+export function proxy(request: NextRequest) {
+  const hasSessionCookie = request.cookies.has(SESSION_COOKIE_NAME);
+  if (request.nextUrl.pathname.startsWith("/panel") && !hasSessionCookie) {
     const loginUrl = new URL("/iniciar-sesion", request.url);
     loginUrl.searchParams.set("next", request.nextUrl.pathname);
     return NextResponse.redirect(loginUrl);
   }
-
-  if (request.nextUrl.pathname === "/iniciar-sesion" && user) {
-    return NextResponse.redirect(new URL("/panel", request.url));
-  }
-
-  return response;
+  return NextResponse.next();
 }
 
-export const config = {
-  matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
-  ],
-};
+export const config = { matcher: ["/panel/:path*"] };

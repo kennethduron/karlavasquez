@@ -1,49 +1,53 @@
-# Karla Norin Vásquez — Bufete Legal
+# Karla Norin Vásquez — plataforma legal
 
-Fundación de una plataforma integrada con sitio público y CRM jurídico privado para Honduras.
+Fundación de autenticación e infraestructura del CRM jurídico. Esta rama corresponde exclusivamente a **KNV Phase 1**.
 
-> Estado: **Fase 0**. No contiene todavía el sitio público ni los módulos funcionales del CRM.
+## Plataforma vigente
 
-## Stack
+- Backend actual: Firebase
+- Datos: Cloud Firestore
+- Identidad: Firebase Authentication
+- Archivos privados: Firebase Storage con autorización server-side
+- Hosting: Vercel (no Firebase Hosting)
+- Backend futuro: Supabase/PostgreSQL
 
-- Next.js App Router, React, TypeScript strict y Tailwind CSS
-- Supabase PostgreSQL, Auth, Storage privado y Row Level Security
-- Zod, React Hook Form, Vitest y Playwright
-- Zona operativa: `America/Tegucigalpa`
+No hay registro público. El panel usa una cookie de sesión `HttpOnly` emitida después de validar un ID token con Firebase Admin. Los módulos funcionales del CRM y el sitio público completo quedan fuera de esta fase.
 
-## Desarrollo local
+## Desarrollo
 
-Requisitos: Node.js 22.12 o superior y npm.
+Requisitos: Node.js 22.12+, Java 21+ y npm.
 
 ```bash
 npm ci
 copy .env.example .env.local
+npm run firebase:emulators
 npm run dev
 ```
 
-La aplicación compila sin credenciales para validar la fundación. Auth, formularios y datos requieren un proyecto Supabase dedicado configurado en `.env.local`.
+Los emuladores permiten validar Auth, Firestore y Storage sin credenciales reales. Para un proyecto Firebase real deben configurarse las variables documentadas en `.env.example`; nunca se versionan secretos.
 
-## Controles de calidad
+## Validación
 
 ```bash
+npm run format:check
 npm run typecheck
 npm run lint
 npm test
+npm run test:rules
+npm run test:e2e
+npm run test:e2e:firebase
+npm run security:check
 npm run build
 ```
 
-Las pruebas E2E requieren instalar el navegador de Playwright y se ejecutan con `npm run test:e2e`.
-
 ## Documentación
 
-- [Arquitectura](docs/ARCHITECTURE.md)
-- [Base de datos](docs/DATABASE.md)
-- [Autorización y RLS](docs/AUTHORIZATION.md)
+- [Arquitectura actual](docs/ARCHITECTURE.md)
+- [Arquitectura Firebase](docs/FIREBASE_ARCHITECTURE.md)
+- [Modelo Firestore](docs/DATABASE.md)
+- [Autenticación](docs/AUTHENTICATION.md)
+- [Autorización](docs/AUTHORIZATION.md)
 - [Seguridad](docs/SECURITY.md)
-- [Rutas](docs/ROUTES.md)
-- [Design system](docs/DESIGN_SYSTEM.md)
-- [Plan de implementación](docs/IMPLEMENTATION_PLAN.md)
-
-## Seguridad
-
-No agregue secretos al repositorio. La service role de Supabase es exclusivamente server-side. Los documentos legales usan bucket privado y acceso temporal autorizado.
+- [Entornos](docs/ENVIRONMENTS.md)
+- [Migración futura a Supabase](docs/FUTURE_SUPABASE_MIGRATION.md)
+- [Plan](docs/IMPLEMENTATION_PLAN.md)

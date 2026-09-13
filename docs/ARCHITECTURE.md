@@ -1,135 +1,71 @@
-# Arquitectura maestra KNV
+# Arquitectura KNV
 
-## Alcance de Fase 0
+## Decisión vigente
 
-Esta fase crea exclusivamente la fundación técnica del sitio público y el CRM jurídico privado. La página raíz, el acceso y el panel existentes son shells de verificación; no son módulos funcionales ni diseños finales.
+| Responsabilidad           | Tecnología actual               | Objetivo futuro                |
+| ------------------------- | ------------------------------- | ------------------------------ |
+| Aplicación web y hosting  | Next.js en Vercel               | Vercel                         |
+| Autenticación             | Firebase Authentication         | Por evaluar en migración       |
+| Datos                     | Cloud Firestore                 | Supabase/PostgreSQL            |
+| Archivos jurídicos        | Firebase Storage + servidor     | Storage privado compatible     |
+| Operaciones privilegiadas | Firebase Admin SDK, server-only | Adaptador Supabase server-only |
 
-## Estado inicial auditado
+`CURRENT_BACKEND = Firebase`. `FUTURE_BACKEND = Supabase/PostgreSQL`. Las migraciones de Phase 0 se conservan como referencia histórica y no participan del runtime actual.
 
-- La carpeta `Karla_Vasquez` estaba vacía.
-- Git se resolvía accidentalmente al repositorio padre `Kenneth_Projects`, sin commits y con un remoto perteneciente a `kencodehn`.
-- No había `package.json`, lockfile, código, variables de entorno ni assets locales.
-- Los mockups y logotipos fueron suministrados como referencias en la conversación, no como archivos editables del repositorio.
-- Se inicializó un repositorio Git aislado en esta carpeta para no tocar proyectos vecinos.
-
-## Principios
-
-1. PostgreSQL es la fuente de verdad para integridad, autorización y trazabilidad.
-2. La UI nunca se considera una barrera de seguridad.
-3. Los Server Components son la opción predeterminada; los Client Components se reservan para interacción local.
-4. Todas las mutaciones validan entrada, sesión y permiso en servidor.
-5. El sitio público y el CRM comparten dominio de negocio, tipos y tokens, pero tienen layouts y límites de caché distintos.
-6. La relación canónica es `consultation → client → cases[]`; un cliente no se limita a un expediente.
-7. Los documentos jurídicos permanecen privados y se entregan mediante URLs firmadas de corta duración.
-
-## Vista general
-
-```mermaid
-flowchart LR
-  Browser[Navegador] --> Public[App Router público]
-  Browser --> Auth[Supabase Auth]
-  Browser --> CRM[App Router /panel]
-  Public --> Intake[Route Handler / Server Action]
-  CRM --> Services[Servicios de aplicación server-only]
-  Intake --> Validation[Zod + anti-spam + rate limit]
-  Validation --> DB[(Supabase PostgreSQL)]
-  Services --> DB
-  Services --> Storage[(Bucket privado)]
-  DB --> RLS[RLS + permisos]
-  DB --> Audit[Audit log append-only]
-```
-
-## Capas
-
-### Presentación
-
-- `src/app`: rutas, layouts, metadata, límites de carga/error.
-- `src/components/ui`: primitivas accesibles, sin reglas de negocio.
-- `src/components/public`, `src/components/crm`, `src/components/forms`: composiciones futuras por superficie.
-
-### Aplicación
-
-- `src/features/<feature>`: consultas, clientes, expedientes, documentos, agenda y CMS.
-- Cada feature contendrá validación, queries, commands, mappers y componentes específicos.
-- Las páginas solo orquestan; no contendrán transacciones ni lógica de autorización.
-
-### Infraestructura
-
-- `src/lib/supabase`: clientes browser, server y service-role separados.
-- `src/lib/permissions`: vocabulario y verificaciones de permisos.
-- `src/lib/validation`: esquemas compartidos.
-- `src/lib/security`: rate limiting, uploads, logging seguro e idempotencia en fases siguientes.
-
-## Server vs. client
-
-| Responsabilidad              | Ejecución                                          |
-| ---------------------------- | -------------------------------------------------- |
-| Consultas a datos privados   | Server Component o servicio server-only            |
-| Verificación de usuario      | `supabase.auth.getUser()` en servidor              |
-| Autorización                 | RLS + permiso server-side                          |
-| Mutaciones                   | Server Action o Route Handler validado             |
-| Formularios interactivos     | Client Component pequeño + React Hook Form         |
-| Tablas, filtros y paginación | Query server-side; estado de controles en cliente  |
-| Service role                 | Solo módulo `server-only`; nunca en bundle público |
-| Creación de signed URL       | Servidor, después de autorizar el documento        |
-
-## Patrón de mutaciones
-
-1. Verificar sesión en servidor.
-2. Validar payload con Zod.
-3. Verificar permiso explícito.
-4. Ejecutar una función SQL transaccional cuando haya múltiples escrituras.
-5. Registrar auditoría segura.
-6. Invalidar la caché afectada.
-7. Devolver un resultado tipado sin detalles internos.
-
-Las operaciones críticas usarán claves de idempotencia. La migración incluye una conversión de consulta a cliente bloqueada con `FOR UPDATE`, que devuelve el mismo cliente ante reintentos.
-
-## Estructura objetivo
+## Capas obligatorias
 
 ```text
-src/
-  app/
-    (public)/                 # sitio público futuro
-    (auth)/                   # login y recuperación
-    (crm)/panel/              # superficie privada
-    api/                      # webhooks o endpoints cuando sean necesarios
-  components/
-    ui/ public/ crm/ forms/ layout/
-  features/
-    consultations/ clients/ cases/ documents/
-    tasks/ events/ users/ cms/ audit/
-  lib/
-    auth/ env/ permissions/ security/ supabase/ utils/ validation/
-  config/
-  types/
-supabase/
-  migrations/
-tests/
-  e2e/
-docs/
+React / Route Handlers
+          ↓
+Application services
+          ↓
+Domain repository interfaces
+          ↓
+Firebase adapters
+          ↓
+Auth / Firestore / Storage / Admin SDK
 ```
 
-Las carpetas se crean cuando exista código real; no se agregan directorios vacíos por apariencia.
+- `src/domain` contiene entidades y contratos sin tipos Firebase.
+- `src/services` implementa autorización y casos de uso server-side.
+- `src/infrastructure/firebase` encapsula SDKs y adaptadores.
+- `src/app` y `src/features` consumen servicios, nunca distribuyen consultas Firestore por los componentes.
+- Los tipos públicos usan `string`, `Date` y DTOs del dominio; no exponen `DocumentSnapshot`, `DocumentReference` ni `Timestamp`.
 
-## Caché y rendimiento
+Esta frontera permite crear adaptadores `Supabase*Repository` futuros sin reconstruir la UI o la lógica del dominio.
 
-- Páginas públicas publicadas: renderizado estático o revalidado cuando el contenido lo permita.
-- CRM: dinámico y sin caché compartida para datos privados.
-- Paginación, búsqueda y filtros se ejecutan en PostgreSQL; nunca se descarga el universo de clientes al navegador.
-- Índices cubren búsqueda normalizada, estados, responsables, próximas acciones, fechas y auditoría.
-- Imágenes públicas usarán `next/image`; documentos privados no pasarán por optimización pública.
+## Superficies de Phase 1
 
-## Manejo de errores
+- Login, recuperación, cambio de contraseña y logout reales con Firebase Auth.
+- Intercambio de ID token por cookie de sesión segura.
+- Panel protegido en servidor y shell responsive de fundación.
+- Repositorios para usuarios, consultas, clientes, expedientes, notas, documentos, tareas, eventos, roles y auditoría.
+- Reglas e índices de Firestore; reglas privadas de Storage.
+- Emulator Suite y pruebas de ataques por rol.
 
-- Errores esperados: resultado tipado y mensaje accionable.
-- Permiso denegado: respuesta genérica 403 sin revelar existencia del registro.
-- Inesperados: identificador de correlación, log técnico redactado y mensaje público neutro.
-- `error.tsx`, `loading.tsx` y `not-found.tsx` establecen los límites globales iniciales.
+No incluye dashboard funcional, Home completa ni módulos CRUD. No se despliega ni conecta dominio en esta fase.
 
-## Decisiones pendientes de configuración externa
+## Reutilización auditada de la Phase 1 Supabase
 
-- Crear proyecto Supabase y ejecutar migraciones revisadas.
-- Configurar credenciales Auth, URL canónica y remitente de correo.
-- Definir proveedor de rate limit y protección anti-bot.
-- Recibir logo/imaginería en archivos fuente y datos reales aprobados del bufete.
+### A. Reutilizado por ser backend-agnostic
+
+- Base visual del login y shell CRM.
+- CSS responsive, accesibilidad y estados loading/error/forbidden.
+- Esquemas Zod de credenciales y sus pruebas.
+- Configuración genérica de Playwright y CI, adaptada a emuladores.
+
+### B. No reutilizado por ser específico de Supabase
+
+- Clientes browser/server/admin de Supabase.
+- Supabase Auth SSR, refresco de sesión, callback PKCE y MFA específico.
+- Runtime RLS, service-role, acceso a Storage y migración activa de Phase 1.
+- Dependencias `@supabase/ssr` y `@supabase/supabase-js`.
+
+### C. Reimplementado para Firebase
+
+- Login/logout/recuperación, sesión server-side y guardas.
+- Roles, permisos, custom claims y estado de cuenta.
+- Repositorios, IDs humanos, auditoría y documentos privados.
+- Reglas Firestore/Storage, emuladores y pruebas de ataque.
+
+No se hizo cherry-pick ni merge del commit Supabase.
