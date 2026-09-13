@@ -6,7 +6,9 @@ Firebase Emulator Suite ejecuta Auth `9099`, Firestore `8080` y Storage `9199` c
 
 ## Firebase real
 
-Estado actual: `BLOCKED_BY_EXTERNAL_CONFIGURATION`. No se recibió project ID ni credenciales y no se inventaron valores.
+Estado verificado en Phase 1.1: `BLOCKED_BY_EXTERNAL_CONFIGURATION`. La cuenta autenticada en Firebase CLI no tiene un proyecto `knv-development` ni `karla-vasquez-development`; los proyectos de otros clientes no se reutilizan. No existe `.env.local`, no se recibió project ID ni credenciales y no se inventaron valores.
+
+Región propuesta para aprobación antes de crear recursos: Firestore `nam5` (Estados Unidos central, multi-región). Honduras no dispone de una región Firestore local; `nam5` prioriza disponibilidad y durabilidad para datos jurídicos sobre el menor costo de una región única. La ubicación es inmutable después de crear la base, por lo que no debe provisionarse hasta que el propietario confirme esta decisión. Storage debe seleccionarse de forma compatible y documentarse en el momento de creación.
 
 El propietario debe crear proyectos separados de development/staging/production y configurar:
 
@@ -18,6 +20,8 @@ El propietario debe crear proyectos separados de development/staging/production 
 - despliegue revisado de `firestore.rules`, `storage.rules` e índices;
 - roles/permisos iniciales, primera administradora y claims;
 - proveedor de correo de invitaciones, alertas de presupuesto, logs y backups.
+
+No se debe desplegar `blockPublicUserCreation` hasta enlazar una cuenta de facturación al plan Blaze y configurar alertas/límites. Identity Platform habilita blocking functions y MFA; no se activa automáticamente como efecto de esta documentación.
 
 ## Vercel
 

@@ -36,8 +36,8 @@ CI usa lockfile, format, typecheck, lint, unit tests, emuladores, build, Playwri
 ## Pendiente antes de producción
 
 - Proyecto Firebase real separado por entorno y presupuesto/alertas.
-- App Check donde aporte defensa adicional; nunca reemplaza Rules.
-- MFA para administradoras y política de reautenticación.
+- App Check: `READY_FOR_LATER`, no aplicado todavía. Registrar la app web con reCAPTCHA Enterprise, validar local/preview con debug tokens, observar métricas y solo después habilitar enforcement; nunca reemplaza Rules ni autorización server-side.
+- MFA: disponible con Firebase Authentication with Identity Platform. Se recomienda TOTP para `Administradora` antes de producción por evitar dependencia/costo de SMS; requiere implementar enrollment/recovery y política de reautenticación después de activar Identity Platform.
 - SMTP/proveedor de invitaciones y plantillas revisadas.
 - Antivirus, retención, backups/exportación y simulacro de restauración.
 - Monitoreo, rate limiting y respuesta a incidentes.
