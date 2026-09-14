@@ -42,6 +42,7 @@ test("all required public routes render with shared navigation and footer", asyn
 
   for (const [route, heading] of routes) {
     const response = await page.goto(route);
+    await page.waitForLoadState("networkidle");
     expect(response?.status(), `${route} response`).toBe(200);
     await expect(
       page.getByRole("heading", { level: 1, name: heading }),
@@ -189,17 +190,18 @@ test("official brand, social and platform assets are public", async ({
   await page.goto("/");
   await expect(page.locator(".public-brand-mark img").first()).toBeVisible();
   await expect(page.locator(".home-hero-media img")).toBeVisible();
-  expect(
-    await page
-      .locator("main img")
-      .evaluateAll((images) =>
-        images.every(
-          (image) =>
-            (image as HTMLImageElement).complete &&
-            (image as HTMLImageElement).naturalWidth > 0,
+  for (const image of await page.locator("main img").all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect
+      .poll(() =>
+        image.evaluate(
+          (element) =>
+            (element as HTMLImageElement).complete &&
+            (element as HTMLImageElement).naturalWidth > 0,
         ),
-      ),
-  ).toBe(true);
+      )
+      .toBe(true);
+  }
 });
 
 test("mobile and tablet landscape layouts avoid overflow", async ({
