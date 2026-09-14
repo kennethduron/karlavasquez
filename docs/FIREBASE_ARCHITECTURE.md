@@ -18,6 +18,8 @@ La cookie `knv_session` es `HttpOnly`, `SameSite=Lax`, `Secure` en producción y
 
 Logout revoca refresh tokens y elimina la cookie. Cuentas deshabilitadas fallan tanto en Auth como por el estado del perfil.
 
+`test:firebase:real:session` valida el flujo completo sobre DEV con un usuario y rol temporales: login real, intercambio del ID token, emisión HttpOnly, acceso al panel, logout, revocación comprobada con Admin SDK y limpieza. El test contempla que un redirect desde Server Components puede viajar como redirect HTTP o como instrucción de streaming de Next.js.
+
 ## Claims y documentos de autorización
 
 Los custom claims contienen únicamente:

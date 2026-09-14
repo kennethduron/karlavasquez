@@ -16,8 +16,10 @@ Estado real de DEV:
 - Email/Password Auth: habilitado;
 - Firestore Standard `freeTier: true`: creado en `nam5`, PITR deshabilitado y delete protection habilitada;
 - `firestore.rules` e índices: desplegados;
-- credenciales Admin locales/Vercel: pendientes de generación y configuración segura;
+- credenciales Admin locales: configuradas en `.env.local` ignorado por Git; secretos Vercel: pendientes;
 - dominios, plantillas/action handler, roles/permisos iniciales, primera administradora y proveedor de invitaciones: pendientes.
+
+La validación real confirmó login Email/Password, intercambio de ID token, cookie HttpOnly, acceso server-side a `/panel`, logout, revocación y eliminación de fixtures. La cuenta temporal, su perfil, rol y auditoría se eliminan dentro del mismo test.
 
 Staging y producción no se crean en esta fase. Cuando se autoricen deberán ser proyectos separados; nunca se reutiliza DEV ni infraestructura de otros clientes.
 
