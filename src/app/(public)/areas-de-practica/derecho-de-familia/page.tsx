@@ -40,6 +40,10 @@ export default function FamilyLawPage() {
         eyebrow="Derecho de Familia"
         title="Orientación sensible para decisiones importantes"
         copy="Los asuntos familiares requieren escucha, prudencia y una atención jurídica que respete tanto los hechos como a las personas involucradas."
+        image={{
+          src: "/images/knv/family-law-guidance.webp",
+          alt: "Conversación respetuosa entre adultos en un espacio jurídico privado",
+        }}
       >
         <Link className="button button--gold" href="/solicitar-consulta">
           Solicitar orientación <ArrowRight size={18} aria-hidden="true" />

@@ -20,7 +20,7 @@ describe("public SEO architecture", () => {
     );
     expect(metadata.openGraph?.images).toEqual([
       expect.objectContaining({
-        url: "https://bufetekarlavasquez.com/opengraph-image",
+        url: "https://bufetekarlavasquez.com/images/knv/opengraph-1200x630.jpg",
         width: 1200,
         height: 630,
       }),

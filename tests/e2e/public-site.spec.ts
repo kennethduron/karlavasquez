@@ -18,6 +18,19 @@ const routes = [
 
 const responsiveWidths = [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920];
 
+const imagePaths = [
+  "/images/knv/home-hero-legal.webp",
+  "/images/knv/about-professional-approach.webp",
+  "/images/knv/practice-areas-legal.webp",
+  "/images/knv/family-law-guidance.webp",
+  "/images/knv/divorce-legal-guidance.webp",
+  "/images/knv/legal-consultation.webp",
+  "/images/knv/legal-resources.webp",
+  "/images/knv/legal-office-contact.webp",
+  "/images/knv/notarial-civil-services.webp",
+  "/images/knv/commercial-law.webp",
+] as const;
+
 test("all required public routes render with shared navigation and footer", async ({
   page,
 }) => {
@@ -40,6 +53,9 @@ test("all required public routes render with shared navigation and footer", asyn
     ).toBeVisible();
     await expect(page.getByRole("contentinfo")).toContainText(
       "Contenido informativo general",
+    );
+    expect(await page.locator("body").innerText()).not.toMatch(
+      /phase 2|pendiente|firestore|demostraci[oó]n|no persistence/i,
     );
   }
 
@@ -94,7 +110,7 @@ test("mobile navigation is keyboard-accessible and closes after navigation", asy
   ).toHaveAttribute("aria-expanded", "false");
 });
 
-test("consultation form validates three steps and explicitly does not submit", async ({
+test("consultation form validates three steps without claiming receipt", async ({
   page,
 }) => {
   await page.goto("/solicitar-consulta");
@@ -113,15 +129,17 @@ test("consultation form validates three steps and explicitly does not submit", a
     .fill("Descripción general suficiente para solicitar orientación legal.");
   await page.getByRole("button", { name: /Continuar/ }).click();
   await page.getByLabel(/He leído el aviso de privacidad/).check();
-  await page.getByRole("button", { name: /Validar solicitud/ }).click();
-  await expect(page.getByRole("status")).toContainText("no se envió");
+  await page.getByRole("button", { name: /Revisar solicitud/ }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "aún no ha recibido esta solicitud",
+  );
 });
 
 test("contact form exposes honest validation-only feedback", async ({
   page,
 }) => {
   await page.goto("/contacto");
-  await page.getByRole("button", { name: "Validar mensaje" }).click();
+  await page.getByRole("button", { name: "Revisar mensaje" }).click();
   await expect(page.getByRole("alert").first()).toBeVisible();
   await page.getByLabel("Nombre completo").fill("Persona de Prueba");
   await page.getByLabel("Correo electrónico").fill("persona@example.com");
@@ -130,10 +148,84 @@ test("contact form exposes honest validation-only feedback", async ({
     .getByLabel("Mensaje")
     .fill("Este es un mensaje general con contenido suficiente para validar.");
   await page.getByLabel("He leído el aviso de privacidad.").check();
-  await page.getByRole("button", { name: "Validar mensaje" }).click();
+  await page.getByRole("button", { name: "Revisar mensaje" }).click();
   await expect(page.getByRole("status")).toContainText(
-    "ningún dato fue transmitido",
+    "aún no ha recibido este mensaje",
   );
+});
+
+test("official brand, social and platform assets are public", async ({
+  page,
+  request,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "Asset HTTP checks run once");
+
+  const paths = [
+    "/favicon.ico",
+    "/favicon-16x16.png",
+    "/favicon-32x32.png",
+    "/apple-touch-icon.png",
+    "/images/knv/icon-192.png",
+    "/images/knv/icon-512.png",
+    "/images/knv/navbar-brand-icon.webp",
+    "/images/knv/opengraph-1200x630.jpg",
+    ...imagePaths,
+  ];
+
+  for (const path of paths) {
+    const response = await request.get(path);
+    expect(response.status(), `${path} status`).toBe(200);
+    expect(response.headers()["content-type"], `${path} content type`).toMatch(
+      /^image\//,
+    );
+  }
+
+  const manifest = await request.get("/manifest.webmanifest");
+  expect(manifest.status()).toBe(200);
+  expect(manifest.headers()["content-type"]).toContain(
+    "application/manifest+json",
+  );
+
+  await page.goto("/");
+  await expect(page.locator(".public-brand-mark img").first()).toBeVisible();
+  await expect(page.locator(".home-hero-media img")).toBeVisible();
+  expect(
+    await page
+      .locator("main img")
+      .evaluateAll((images) =>
+        images.every(
+          (image) =>
+            (image as HTMLImageElement).complete &&
+            (image as HTMLImageElement).naturalWidth > 0,
+        ),
+      ),
+  ).toBe(true);
+});
+
+test("mobile and tablet landscape layouts avoid overflow", async ({
+  page,
+}, testInfo) => {
+  const isMobile = ["android-chromium", "iphone-webkit"].includes(
+    testInfo.project.name,
+  );
+  const isTablet = testInfo.project.name === "ipad-webkit";
+  test.skip(
+    !isMobile && !isTablet,
+    "Landscape runs on mobile and tablet profiles",
+  );
+
+  await page.setViewportSize(
+    isTablet ? { width: 1194, height: 834 } : { width: 844, height: 390 },
+  );
+  for (const route of ["/", "/solicitar-consulta", "/contacto"]) {
+    await page.goto(route);
+    const overflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    );
+    expect(overflow, `${route} landscape overflow`).toBeLessThanOrEqual(1);
+  }
 });
 
 test("metadata, structured data, skip link and 404 are present", async ({
@@ -147,11 +239,23 @@ test("metadata, structured data, skip link and 404 are present", async ({
   );
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
     "content",
-    /\/opengraph-image/,
+    /\/images\/knv\/opengraph-1200x630\.jpg/,
   );
-  await expect(page.locator('link[rel="icon"]')).toHaveAttribute(
+  await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute(
+    "content",
+    "1200",
+  );
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute(
+    "content",
+    "summary_large_image",
+  );
+  await expect(page.locator('link[rel="icon"]').first()).toHaveAttribute(
     "href",
-    /\/icon/,
+    /\/favicon\.ico/,
+  );
+  await expect(page.locator('link[rel="apple-touch-icon"]')).toHaveAttribute(
+    "href",
+    /\/apple-touch-icon\.png/,
   );
   const structuredData = await page
     .locator('script[type="application/ld+json"]')

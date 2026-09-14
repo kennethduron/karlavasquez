@@ -34,7 +34,7 @@ export function ContactForm() {
       noValidate
       onSubmit={handleSubmit(() =>
         setNotice(
-          "Mensaje validado localmente. El envío estará disponible en la siguiente fase; ningún dato fue transmitido.",
+          "El bufete aún no ha recibido este mensaje. Revise la información ingresada antes de continuar por un canal oficial.",
         ),
       )}
     >
@@ -108,7 +108,7 @@ export function ContactForm() {
         {...register("website")}
       />
       <button className="button button--navy" type="submit">
-        Validar mensaje
+        Revisar mensaje
       </button>
       {notice ? (
         <div className="form-stage-notice" role="status">

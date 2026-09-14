@@ -73,7 +73,7 @@ export function ConsultationForm() {
 
   function onSubmit() {
     setNotice(
-      "La información fue validada en este dispositivo, pero no se envió. El envío seguro se habilitará en la siguiente fase.",
+      "El bufete aún no ha recibido esta solicitud. Revise la información ingresada antes de continuar por un canal oficial.",
     );
   }
 
@@ -195,8 +195,8 @@ export function ConsultationForm() {
           <label className="checkbox-field">
             <input type="checkbox" {...register("privacyConsent")} />
             <span>
-              He leído el aviso de privacidad y autorizo la validación local de
-              estos datos.
+              He leído el aviso de privacidad y confirmo que deseo revisar estos
+              datos.
             </span>
           </label>
           {errors.privacyConsent ? (
@@ -248,7 +248,7 @@ export function ConsultationForm() {
             type="submit"
             disabled={isSubmitting}
           >
-            Validar solicitud
+            Revisar solicitud
             <Check size={18} aria-hidden="true" />
           </button>
         )}

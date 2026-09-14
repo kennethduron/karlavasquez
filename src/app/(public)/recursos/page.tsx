@@ -28,6 +28,10 @@ export default function ResourcesPage() {
         eyebrow="Recursos jurídicos"
         title="Información clara para orientarse mejor"
         copy="Contenido general y prudente para ayudarle a preparar preguntas antes de una consulta profesional."
+        image={{
+          src: "/images/knv/legal-resources.webp",
+          alt: "Libros, notas y herramientas para investigación jurídica",
+        }}
       />
       <section className="public-section public-section--cream">
         <div className="site-container featured-resource">
@@ -35,7 +39,7 @@ export default function ResourcesPage() {
             <span>Lectura destacada · {featured.readTime}</span>
             <h2>{featured.title}</h2>
             <p>{featured.excerpt}</p>
-            <small>Contenido editorial en preparación</small>
+            <small>Lectura introductoria · Información general</small>
           </div>
           <BookOpenCheck aria-hidden="true" />
         </div>

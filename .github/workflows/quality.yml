@@ -8,6 +8,7 @@ on:
       - main
       - feat/knv-firebase-auth-infrastructure-phase-1
       - feat/knv-public-site-phase-2
+      - feat/knv-public-site-polish-phase-2-1
 
 concurrency:
   group: quality-${{ github.ref }}
@@ -53,7 +54,7 @@ jobs:
           distribution: temurin
           java-version: 21
       - run: npm ci
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
       - run: npm run test:e2e:firebase
 

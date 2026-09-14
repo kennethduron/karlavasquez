@@ -62,7 +62,7 @@ No se diseña una pantalla de 1920 px para reducirla después. Cada componente d
 
 La arquitectura contempla `Button`, `Input`, `Textarea`, `Select`, `Checkbox`, `Radio`, date picker, `Badge`, `Card`, `Table`, modal, drawer, dropdown, tabs, breadcrumb, tooltip, empty state, skeleton, alert, toast, pagination, search, filters, sidebar y topbar.
 
-Phase 2 agrega header público, drawer, footer, breadcrumbs, heroes, cards, FAQ, CTAs, buscador local y formularios accesibles. Se evita una dependencia de primitivas adicional mientras los controles nativos cubran correctamente semántica y teclado.
+Phase 2.1 agrega la marca oficial al header, fotografía editorial coherente en heroes y contenido, además de derivados Apple/Android. Se evita una dependencia de primitivas adicional mientras los controles nativos cubran correctamente semántica y teclado.
 
 ## Estados obligatorios
 
@@ -80,4 +80,4 @@ Cada feature debe especificar: loading/skeleton, empty, error recuperable, succe
 
 ## Assets
 
-Se localizaron seis referencias raster de una marca ajena, útiles solo para composición, jerarquía, ritmo, cards y CTAs. No se copió su identidad. No estaban disponibles los ocho mockups KNV, logo/isotipo vectorial ni fotografía profesional oficial. La marca tipográfica temporal y el monograma geométrico se implementan como UI sustituible; no pretenden ser el logotipo oficial. El layout funciona sin retrato y reserva una integración futura con assets reales.
+El isotipo oficial proviene de `assets/favicon.jpg` y sustituye el icono genérico del navbar. Se usa con fondo blanco, borde dorado y tamaños visuales de 44 px en móvil y 52 px en desktop, sin alterar su arte. `assets/opengraph.jpg` es el diseño social oficial. Los recursos editoriales mantienen la paleta navy, cream, gold y madera oscura; son ilustrativos y nunca se presentan como retratos u oficinas reales. Consulte `docs/IMAGE_ASSETS.md`.

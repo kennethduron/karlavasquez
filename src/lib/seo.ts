@@ -15,7 +15,10 @@ export function createPageMetadata({
 }: PageMetadata): Metadata {
   const canonical = new URL(path, siteConfig.canonicalUrl).toString();
   const socialImage = {
-    url: new URL("/opengraph-image", siteConfig.canonicalUrl).toString(),
+    url: new URL(
+      "/images/knv/opengraph-1200x630.jpg",
+      siteConfig.canonicalUrl,
+    ).toString(),
     width: 1200,
     height: 630,
     alt: `${siteConfig.professionalName} — ${siteConfig.brandName}`,

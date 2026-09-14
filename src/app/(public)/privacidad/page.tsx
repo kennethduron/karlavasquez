@@ -1,5 +1,3 @@
-import { AlertCircle } from "lucide-react";
-
 import { Breadcrumbs, PageHero } from "@/components/public/sections";
 import { createPageMetadata } from "@/lib/seo";
 
@@ -20,19 +18,11 @@ export default function PrivacyPage() {
         copy="Principios generales para el manejo de información proporcionada voluntariamente mediante este sitio."
       />
       <article className="site-container legal-copy">
-        <div className="legal-review">
-          <AlertCircle aria-hidden="true" />
-          <p>
-            <strong>Pendiente de aprobación legal final.</strong> Este texto es
-            una base informativa y deberá revisarse antes del lanzamiento bajo
-            el dominio definitivo.
-          </p>
-        </div>
         <h2>Información proporcionada voluntariamente</h2>
         <p>
-          Cuando los formularios sean activados, podrán solicitar datos básicos
-          de identificación y contacto, así como una descripción general del
-          motivo de la comunicación.
+          Los formularios pueden solicitar datos básicos de identificación y
+          contacto, así como una descripción general del motivo de la
+          comunicación.
         </p>
         <h2>Finalidad prevista</h2>
         <p>
@@ -46,16 +36,16 @@ export default function PrivacyPage() {
           comunicación. No deben enviarse documentos confidenciales hasta
           recibir instrucciones por un canal confirmado.
         </p>
-        <h2>Estado actual de los formularios</h2>
+        <h2>Envío de formularios</h2>
         <p>
-          Durante Phase 2 los formularios validan campos en el navegador, pero
-          no transmiten ni almacenan información en Firestore, correo u otro
-          servicio.
+          La revisión del formulario en pantalla no confirma recepción por parte
+          del bufete. Una comunicación solo se considera recibida cuando exista
+          confirmación expresa por un canal oficial.
         </p>
-        <h2>Contacto futuro</h2>
+        <h2>Consultas de privacidad</h2>
         <p>
-          El canal oficial para consultas de privacidad se publicará cuando el
-          correo profesional sea confirmado.
+          Toda consulta sobre privacidad deberá dirigirse mediante los canales
+          oficiales publicados por el bufete.
         </p>
       </article>
     </main>

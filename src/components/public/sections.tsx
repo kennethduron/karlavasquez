@@ -1,4 +1,5 @@
 import { ArrowRight, Check, Scale } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -26,11 +27,13 @@ export function PageHero({
   eyebrow,
   title,
   copy,
+  image,
   children,
 }: {
   eyebrow: string;
   title: string;
   copy: string;
+  image?: { src: string; alt: string; position?: string };
   children?: ReactNode;
 }) {
   return (
@@ -42,14 +45,51 @@ export function PageHero({
           <p className="page-hero-copy">{copy}</p>
           {children}
         </div>
-        <div className="justice-motif" aria-hidden="true">
-          <span className="justice-orbit justice-orbit--one" />
-          <span className="justice-orbit justice-orbit--two" />
-          <Scale size={82} strokeWidth={1.1} />
-          <small>KNV</small>
-        </div>
+        {image ? (
+          <div className="page-hero-media">
+            <Image
+              src={image.src}
+              alt={image.alt}
+              fill
+              preload
+              sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) 45vw, 560px"
+              style={{ objectPosition: image.position ?? "center" }}
+            />
+          </div>
+        ) : (
+          <div className="justice-motif" aria-hidden="true">
+            <span className="justice-orbit justice-orbit--one" />
+            <span className="justice-orbit justice-orbit--two" />
+            <Scale size={82} strokeWidth={1.1} />
+            <small>KNV</small>
+          </div>
+        )}
       </div>
     </section>
+  );
+}
+
+export function EditorialImage({
+  src,
+  alt,
+  className = "",
+  position = "center",
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  position?: string;
+}) {
+  return (
+    <div className={`editorial-media ${className}`.trim()}>
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) 48vw, 610px"
+        style={{ objectPosition: position }}
+      />
+    </div>
   );
 }
 

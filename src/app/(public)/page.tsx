@@ -7,9 +7,14 @@ import {
   Scale,
   ShieldCheck,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
-import { CtaBand, SectionHeading } from "@/components/public/sections";
+import {
+  CtaBand,
+  EditorialImage,
+  SectionHeading,
+} from "@/components/public/sections";
 import { practiceAreas } from "@/content/practice-areas";
 import { siteConfig } from "@/content/site";
 import { createPageMetadata } from "@/lib/seo";
@@ -76,10 +81,16 @@ export default function HomePage() {
               </li>
             </ul>
           </div>
-          <div className="hero-art" aria-hidden="true">
-            <div className="hero-art-seal">
-              <Scale size={96} strokeWidth={1} />
-              <span>KNV</span>
+          <div className="home-hero-visual">
+            <div className="home-hero-media">
+              <Image
+                src="/images/knv/home-hero-legal.webp"
+                alt="Escritorio jurídico preparado con documentos y balanza de justicia"
+                fill
+                preload
+                sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) 44vw, 560px"
+                style={{ objectPosition: "center" }}
+              />
             </div>
             <blockquote>“{siteConfig.slogan}”</blockquote>
           </div>
@@ -116,13 +127,11 @@ export default function HomePage() {
 
       <section className="public-section">
         <div className="site-container split-section">
-          <div
-            className="portrait-placeholder"
-            aria-label="Espacio preparado para fotografía profesional de Karla Norin Vásquez"
-          >
-            <span>KNV</span>
-            <small>Fotografía profesional pendiente</small>
-          </div>
+          <EditorialImage
+            src="/images/knv/about-professional-approach.webp"
+            alt="Espacio profesional preparado para una consulta jurídica privada"
+            className="editorial-media--arched"
+          />
           <div>
             <SectionHeading
               eyebrow="Sobre Karla"

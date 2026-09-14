@@ -1,5 +1,3 @@
-import { AlertCircle } from "lucide-react";
-
 import { Breadcrumbs, PageHero } from "@/components/public/sections";
 import { createPageMetadata } from "@/lib/seo";
 
@@ -20,13 +18,6 @@ export default function LegalNoticePage() {
         copy="Condiciones generales para interpretar y utilizar el contenido de este sitio."
       />
       <article className="site-container legal-copy">
-        <div className="legal-review">
-          <AlertCircle aria-hidden="true" />
-          <p>
-            <strong>Pendiente de aprobación legal final.</strong> Debe revisarse
-            antes de conectar el dominio definitivo.
-          </p>
-        </div>
         <h2>Contenido informativo</h2>
         <p>
           La información publicada es de carácter general y no constituye

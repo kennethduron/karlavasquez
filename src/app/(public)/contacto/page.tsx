@@ -1,4 +1,4 @@
-import { LockKeyhole, MapPinOff, MessageSquareText } from "lucide-react";
+import { LockKeyhole, MessageSquareText, ShieldCheck } from "lucide-react";
 
 import {
   Breadcrumbs,
@@ -14,7 +14,7 @@ import { createPageMetadata } from "@/lib/seo";
 export const metadata = createPageMetadata({
   title: "Contacto",
   description:
-    "Prepare un mensaje para Karla Norin Vásquez — Bufete Legal. Datos de contacto oficiales pendientes de confirmación.",
+    "Prepare un mensaje general para Karla Norin Vásquez — Bufete Legal.",
   path: "/contacto",
 });
 
@@ -25,23 +25,27 @@ export default function ContactPage() {
       <PageHero
         eyebrow="Contacto"
         title="Estamos aquí para escucharle"
-        copy="Prepare un mensaje general o utilice la solicitud guiada de consulta. Los canales oficiales se publicarán cuando sean confirmados."
+        copy="Prepare un mensaje general o utilice la solicitud guiada para organizar la información esencial de su consulta."
+        image={{
+          src: "/images/knv/legal-office-contact.webp",
+          alt: "Recepción sobria y profesional para atención jurídica",
+        }}
       />
       <section className="public-section">
         <div className="site-container contact-layout">
           <div className="contact-information">
             <SectionHeading
               eyebrow="Información"
-              title="Canales oficiales pendientes"
-              copy="No mostramos teléfonos, correos, horarios ni direcciones sin confirmación expresa."
+              title="Una primera comunicación prudente"
+              copy="Comparta únicamente la información general necesaria para explicar el motivo de su contacto."
             />
             <div className="contact-status-card">
-              <MapPinOff aria-hidden="true" />
+              <ShieldCheck aria-hidden="true" />
               <div>
-                <h3>Ubicación y horario</h3>
+                <h3>Información esencial</h3>
                 <p>
-                  Pendientes de confirmación. No se presenta un mapa ni una
-                  dirección provisional.
+                  Describa brevemente su consulta sin adjuntar documentos ni
+                  incluir información personal innecesaria.
                 </p>
               </div>
             </div>
@@ -58,10 +62,10 @@ export default function ContactPage() {
             <div className="contact-status-card">
               <MessageSquareText aria-hidden="true" />
               <div>
-                <h3>Phase 2</h3>
+                <h3>Confirmación</h3>
                 <p>
-                  El formulario es una demostración validada; todavía no
-                  transmite información.
+                  Una solicitud no equivale a una cita ni crea por sí sola una
+                  relación profesional.
                 </p>
               </div>
             </div>

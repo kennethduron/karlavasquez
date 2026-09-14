@@ -10,6 +10,7 @@ import Link from "next/link";
 import {
   Breadcrumbs,
   CtaBand,
+  EditorialImage,
   PageHero,
   SectionHeading,
 } from "@/components/public/sections";
@@ -50,13 +51,11 @@ export default function AboutPage() {
       </PageHero>
       <section className="public-section">
         <div className="site-container split-section">
-          <div
-            className="portrait-placeholder portrait-placeholder--tall"
-            aria-label="Espacio reservado para fotografía profesional"
-          >
-            <span>KNV</span>
-            <small>Fotografía oficial pendiente</small>
-          </div>
+          <EditorialImage
+            src="/images/knv/about-professional-approach.webp"
+            alt="Sala privada preparada para una conversación jurídica confidencial"
+            className="editorial-media--arched editorial-media--tall"
+          />
           <div>
             <SectionHeading
               eyebrow="Filosofía"
@@ -119,7 +118,7 @@ export default function AboutPage() {
           <SectionHeading
             eyebrow="Perfil profesional"
             title="Áreas de atención jurídica"
-            copy="La información académica, colegiación y trayectoria se incorporará únicamente cuando sea confirmada y aprobada."
+            copy="La atención se concentra en áreas jurídicas que requieren análisis cuidadoso, comunicación clara y una orientación responsable."
           />
           <div className="inline-area-list">
             {practiceAreas.map((area) => (

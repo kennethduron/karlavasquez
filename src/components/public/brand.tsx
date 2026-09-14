@@ -1,4 +1,4 @@
-import { Scale } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { siteConfig } from "@/content/site";
@@ -11,7 +11,13 @@ export function Brand({ inverse = false }: { inverse?: boolean }) {
       aria-label={`${siteConfig.professionalName}, inicio`}
     >
       <span className="public-brand-mark" aria-hidden="true">
-        <Scale size={22} strokeWidth={1.6} />
+        <Image
+          src="/images/knv/navbar-brand-icon.webp"
+          alt=""
+          width={128}
+          height={128}
+          sizes="(max-width: 639px) 44px, 52px"
+        />
       </span>
       <span>
         <strong>{siteConfig.professionalName}</strong>

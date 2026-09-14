@@ -1066,6 +1066,8 @@ h1 {
   width: min(calc(100% - 2rem), 84rem);
   min-height: 4.75rem;
   margin-inline: auto;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
   align-items: center;
   gap: 1rem;
 }
@@ -1080,16 +1082,21 @@ h1 {
 }
 
 .public-brand-mark {
-  display: grid;
   width: 2.8rem;
   height: 2.8rem;
   flex: 0 0 auto;
-  place-items: center;
   border: 1px solid var(--knv-gold-500);
-  border-radius: 50%;
-  background: var(--knv-navy-950);
-  color: var(--knv-gold-100);
+  border-radius: 0.65rem;
+  overflow: hidden;
+  background: white;
   box-shadow: 0 0 0 4px rgb(207 146 43 / 0.08);
+}
+
+.public-brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .public-brand strong,
@@ -1278,7 +1285,7 @@ h1 {
   display: grid;
   min-height: min(48rem, calc(100svh - 4.75rem));
   align-items: center;
-  gap: 3rem;
+  gap: clamp(2.25rem, 6vw, 5rem);
   padding-block: clamp(4rem, 10vw, 7.5rem);
 }
 
@@ -1290,7 +1297,7 @@ h1 {
 .page-hero h1 {
   margin: 0;
   font-family: var(--knv-font-heading);
-  font-size: clamp(2.55rem, 8vw, 5.6rem);
+  font-size: clamp(2.55rem, 7vw, 4.9rem);
   font-weight: 400;
   letter-spacing: -0.035em;
   line-height: 0.98;
@@ -1340,8 +1347,43 @@ h1 {
   color: var(--knv-gold-500);
 }
 
-.hero-art {
-  display: none;
+.home-hero-visual {
+  display: grid;
+  min-width: 0;
+  gap: 1rem;
+}
+
+.home-hero-media,
+.page-hero-media,
+.editorial-media,
+.practice-card-media {
+  position: relative;
+  overflow: hidden;
+  background: #d9d2c6;
+}
+
+.home-hero-media img,
+.page-hero-media img,
+.editorial-media img,
+.practice-card-media img {
+  object-fit: cover;
+}
+
+.home-hero-media {
+  aspect-ratio: 3 / 2;
+  border: 1px solid rgb(224 173 84 / 0.65);
+  border-radius: 1rem;
+  box-shadow: 0 30px 80px rgb(0 0 0 / 0.3);
+}
+
+.home-hero-visual blockquote {
+  margin: 0;
+  color: rgb(255 255 255 / 0.68);
+  font-family: var(--knv-font-heading);
+  font-size: 0.95rem;
+  font-style: italic;
+  line-height: 1.55;
+  text-align: center;
 }
 
 .public-section {
@@ -1491,6 +1533,20 @@ h1 {
   align-items: start;
 }
 
+.editorial-media {
+  min-height: 21rem;
+  border-radius: 1rem;
+  box-shadow: 0 24px 70px rgb(3 27 54 / 0.14);
+}
+
+.editorial-media--arched {
+  border-radius: 12rem 12rem 1rem 1rem;
+}
+
+.editorial-media--tall {
+  min-height: 29rem;
+}
+
 .portrait-placeholder {
   position: relative;
   display: grid;
@@ -1624,6 +1680,14 @@ h1 {
   gap: 3rem;
 }
 
+.page-hero-media {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border: 1px solid rgb(154 101 14 / 0.18);
+  border-radius: 1rem;
+  box-shadow: 0 25px 70px rgb(3 27 54 / 0.16);
+}
+
 .page-hero h1 {
   max-width: 16ch;
   color: var(--knv-navy-950);
@@ -1741,7 +1805,13 @@ h1 {
 }
 
 .practice-detail-card {
+  overflow: hidden;
   padding: clamp(1.25rem, 4vw, 2rem);
+}
+
+.practice-card-media {
+  aspect-ratio: 16 / 8;
+  margin: clamp(-2rem, -4vw, -1.25rem) clamp(-2rem, -4vw, -1.25rem) 1.5rem;
 }
 
 .practice-detail-heading {
@@ -2385,6 +2455,32 @@ h1 {
   margin: 0;
 }
 
+@media (max-width: 47.999rem) {
+  .form-field input,
+  .form-field select,
+  .form-field textarea,
+  .resource-search input {
+    font-size: 1rem;
+  }
+
+  .public-mobile-panel {
+    padding-right: max(1rem, env(safe-area-inset-right));
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+}
+
+@media (max-height: 31rem) and (orientation: landscape) {
+  .home-hero-grid {
+    min-height: auto;
+    padding-block: 2.5rem;
+  }
+
+  .public-mobile-panel nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
 @media (min-width: 40rem) {
   .area-grid,
   .commitment-grid,
@@ -2419,6 +2515,10 @@ h1 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .page-hero-grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(18rem, 0.95fr);
+  }
+
   .principle-grid,
   .process-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -2436,6 +2536,11 @@ h1 {
 @media (min-width: 64rem) {
   .public-header-inner {
     min-height: 5.5rem;
+  }
+
+  .public-brand-mark {
+    width: 3.25rem;
+    height: 3.25rem;
   }
 
   .public-nav--desktop {
@@ -2482,7 +2587,7 @@ h1 {
   }
 
   .home-hero-grid {
-    grid-template-columns: minmax(0, 1.25fr) minmax(20rem, 0.75fr);
+    grid-template-columns: minmax(0, 1.15fr) minmax(24rem, 0.85fr);
   }
 
   .hero-art {

@@ -46,6 +46,10 @@ export default function DivorcePage() {
         eyebrow="Servicio · Derecho de Familia"
         title="Orientación clara y confidencial sobre divorcio"
         copy="Comprender su situación es el punto de partida para identificar las preguntas y decisiones que requieren atención profesional."
+        image={{
+          src: "/images/knv/divorce-legal-guidance.webp",
+          alt: "Documentos organizados para una orientación jurídica sobre divorcio",
+        }}
       >
         <Link className="button button--gold" href="/solicitar-consulta">
           Preparar mi solicitud <ArrowRight size={18} aria-hidden="true" />
@@ -135,8 +139,8 @@ export default function DivorcePage() {
           <div>
             <h2>Confidencialidad como principio</h2>
             <p>
-              Su información merece un manejo prudente. El formulario de esta
-              etapa no transmite datos ni admite documentos.
+              Su información merece un manejo prudente. Evite incluir documentos
+              o datos altamente sensibles en una primera comunicación.
             </p>
           </div>
         </div>
@@ -165,7 +169,7 @@ export default function DivorcePage() {
       </section>
       <CtaBand
         title="Prepare una solicitud de consulta"
-        copy="El formulario le ayudará a ordenar la información; durante Phase 2 no enviará ni guardará datos."
+        copy="El formulario le ayudará a ordenar la información esencial antes de establecer contacto por un canal oficial."
       />
     </main>
   );

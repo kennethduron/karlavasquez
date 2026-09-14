@@ -14,6 +14,17 @@ export const metadata: Metadata = {
   applicationName: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
   authors: [{ name: siteConfig.professionalName }],
   creator: siteConfig.professionalName,
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", type: "image/png", sizes: "16x16" },
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+    ],
+    apple: [
+      { url: "/apple-touch-icon.png", type: "image/png", sizes: "180x180" },
+    ],
+  },
   robots: { index: true, follow: true },
   openGraph: {
     type: "website",
@@ -24,12 +35,18 @@ export const metadata: Metadata = {
     url: siteConfig.canonicalUrl,
     images: [
       {
-        url: "/opengraph-image",
+        url: "/images/knv/opengraph-1200x630.jpg",
         width: 1200,
         height: 630,
         alt: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
+    description: siteConfig.slogan,
+    images: ["/images/knv/opengraph-1200x630.jpg"],
   },
 };
 
