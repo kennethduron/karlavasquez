@@ -2,7 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "lucide-react";
-import { cloneElement, useState, type ReactElement } from "react";
+import {
+  cloneElement,
+  useState,
+  type FormEvent,
+  type ReactElement,
+} from "react";
 import { useForm, type FieldPath } from "react-hook-form";
 
 import { practiceAreas } from "@/content/practice-areas";
@@ -20,7 +25,6 @@ export function ConsultationForm() {
     register,
     handleSubmit,
     clearErrors,
-    getValues,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<PublicConsultationInput>({
@@ -41,19 +45,21 @@ export function ConsultationForm() {
     },
   });
 
-  function nextStep() {
+  function nextStep(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
     clearErrors();
+    const formData = new FormData(event.currentTarget);
     const result =
       step === 1
         ? consultationContactStepSchema.safeParse({
-            fullName: getValues("fullName"),
-            email: getValues("email"),
-            phone: getValues("phone"),
+            fullName: formData.get("fullName"),
+            email: formData.get("email"),
+            phone: formData.get("phone"),
           })
         : consultationMatterStepSchema.safeParse({
-            practiceArea: getValues("practiceArea"),
-            service: getValues("service"),
-            description: getValues("description"),
+            practiceArea: formData.get("practiceArea"),
+            service: formData.get("service"),
+            description: formData.get("description"),
           });
 
     if (!result.success) {
@@ -75,7 +81,7 @@ export function ConsultationForm() {
   return (
     <form
       className="public-form consultation-form"
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={step < 3 ? nextStep : handleSubmit(onSubmit)}
       noValidate
     >
       <div className="stepper" aria-label={`Paso ${step} de 3`}>
@@ -229,11 +235,7 @@ export function ConsultationForm() {
           <span />
         )}
         {step < 3 ? (
-          <button
-            className="button button--navy"
-            type="button"
-            onClick={nextStep}
-          >
+          <button className="button button--navy" type="submit">
             Continuar
             <ArrowRight size={18} aria-hidden="true" />
           </button>
