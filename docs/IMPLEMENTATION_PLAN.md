@@ -19,7 +19,7 @@ Criterio de salida: gates locales y smoke tests del proyecto DEV real pasan o se
 
 El almacenamiento binario jurídico, Cloud Functions, Identity Platform y MFA están diferidos por política de nivel gratuito. Firestore conserva únicamente metadata de documentos; no almacena PDFs, DOCX, imágenes ni otros binarios.
 
-## Phase 2 — sitio público (autorizada)
+## Phase 2 — sitio público (implementada en esta rama)
 
 - Diez rutas públicas, sistema visual responsive, navegación y contenido confirmado.
 - SEO técnico, Metadata API, canonical, sitemap, robots, breadcrumbs, JSON-LD y OG generado.
