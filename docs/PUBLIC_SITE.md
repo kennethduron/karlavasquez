@@ -27,7 +27,7 @@ React Hook Form y Zod proporcionan etiquetas, errores asociados, honeypot, estad
 
 ## Rendimiento y cuota
 
-Las rutas son estáticas cuando no necesitan sesión; no hay listeners, consultas Firestore ni polling. Cada imagen de hero usa `next/image` con `fill`, `sizes="100vw"` y preload por ser candidata LCP de su ruta; las imágenes secundarias conservan carga diferida, dimensiones estables y archivos WebP entre aproximadamente 75 y 182 KB. El sitio público no consume cuota Firebase.
+Las rutas son estáticas cuando no necesitan sesión; no hay listeners, consultas Firestore ni polling. Cada imagen de hero usa `next/image` con `fill`, `sizes="100vw"`, carga eager y prioridad alta por ser candidata LCP de su ruta; las imágenes secundarias conservan carga diferida, dimensiones estables y archivos WebP entre aproximadamente 75 y 182 KB. El sitio público no consume cuota Firebase.
 
 ## Hora de Honduras
 

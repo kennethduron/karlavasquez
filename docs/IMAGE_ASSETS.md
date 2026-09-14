@@ -35,7 +35,7 @@ Cada prompt combinó el lenguaje compartido anterior con el concepto específico
 ## Política editorial y performance
 
 - Son imágenes ilustrativas. Nunca se describen como instalaciones reales ni como fotografía de Karla Norin Vásquez.
-- El hero Home y el hero principal de cada ruta editorial son candidatos LCP independientes y usan preload; el resto conserva lazy loading predeterminado de `next/image`.
+- El hero Home y el hero principal de cada ruta editorial son candidatos LCP independientes y usan carga eager con prioridad alta; el resto conserva lazy loading predeterminado de `next/image`.
 - Home, Sobre Karla, Áreas de Práctica, Familia, Divorcio, Consulta, Recursos y Contacto usan las imágenes como fondos integrados con `fill`, `sizes="100vw"`, overlays navy y altura mínima reservada.
 - Los fondos son decorativos (`alt=""`) porque el título y el copy transmiten el contenido; las imágenes semánticas dentro del cuerpo mantienen texto alternativo descriptivo.
 - `object-position` puede ajustarse por asset y por breakpoint sin generar variantes innecesarias.

@@ -58,7 +58,8 @@ export default function HomePage() {
             src="/images/knv/home-hero-legal.webp"
             alt=""
             fill
-            preload
+            loading="eager"
+            fetchPriority="high"
             sizes="100vw"
           />
         </div>

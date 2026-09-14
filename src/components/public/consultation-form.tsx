@@ -2,12 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ArrowLeft, ArrowRight, Check, ShieldCheck } from "lucide-react";
-import {
-  cloneElement,
-  useState,
-  type MouseEvent,
-  type ReactElement,
-} from "react";
+import { cloneElement, useState, type ReactElement } from "react";
 import { useForm, type FieldPath } from "react-hook-form";
 
 import { practiceAreas } from "@/content/practice-areas";
@@ -25,6 +20,7 @@ export function ConsultationForm() {
     register,
     handleSubmit,
     clearErrors,
+    getValues,
     setError,
     formState: { errors, isSubmitting },
   } = useForm<PublicConsultationInput>({
@@ -45,20 +41,19 @@ export function ConsultationForm() {
     },
   });
 
-  function nextStep(event: MouseEvent<HTMLButtonElement>) {
+  function nextStep() {
     clearErrors();
-    const formData = new FormData(event.currentTarget.form!);
     const result =
       step === 1
         ? consultationContactStepSchema.safeParse({
-            fullName: formData.get("fullName"),
-            email: formData.get("email"),
-            phone: formData.get("phone"),
+            fullName: getValues("fullName"),
+            email: getValues("email"),
+            phone: getValues("phone"),
           })
         : consultationMatterStepSchema.safeParse({
-            practiceArea: formData.get("practiceArea"),
-            service: formData.get("service"),
-            description: formData.get("description"),
+            practiceArea: getValues("practiceArea"),
+            service: getValues("service"),
+            description: getValues("description"),
           });
 
     if (!result.success) {

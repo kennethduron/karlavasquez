@@ -46,7 +46,8 @@ export function PageHero({
             src={image.src}
             alt=""
             fill
-            preload
+            loading="eager"
+            fetchPriority="high"
             sizes="100vw"
             style={{ objectPosition: image.position ?? "center" }}
           />
