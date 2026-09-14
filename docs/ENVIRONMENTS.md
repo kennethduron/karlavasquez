@@ -2,26 +2,26 @@
 
 ## Local
 
-Firebase Emulator Suite ejecuta Auth `9099`, Firestore `8080` y Storage `9199` con project ID `knv-local`. Los scripts `firebase:emulators`, `test:rules` y `test:e2e:firebase` son reproducibles. No se configura Firebase Hosting.
+Firebase Emulator Suite ejecuta Auth `9099` y Firestore `8080` con project ID `knv-local`. Los scripts `firebase:emulators`, `test:rules` y `test:e2e:firebase` son reproducibles. No se configura Firebase Hosting, Storage ni Functions.
 
 ## Firebase real
 
-Estado verificado en Phase 1.1: `BLOCKED_BY_EXTERNAL_CONFIGURATION`. La cuenta autenticada en Firebase CLI no tiene un proyecto `knv-development` ni `karla-vasquez-development`; los proyectos de otros clientes no se reutilizan. No existe `.env.local`, no se recibió project ID ni credenciales y no se inventaron valores.
+Proyecto DEV aislado: `knv-development` (`Karla Vasquez - Development`). `CURRENT_PLAN = Firebase Spark only`; `BILLING = Disabled`. No se reutiliza ningún proyecto de otro cliente.
 
-Región propuesta para aprobación antes de crear recursos: Firestore `nam5` (Estados Unidos central, multi-región). Honduras no dispone de una región Firestore local; `nam5` prioriza disponibilidad y durabilidad para datos jurídicos sobre el menor costo de una región única. La ubicación es inmutable después de crear la base, por lo que no debe provisionarse hasta que el propietario confirme esta decisión. Storage debe seleccionarse de forma compatible y documentarse en el momento de creación.
+Región Firestore aprobada: `nam5` (Estados Unidos central, multi-región). Honduras no dispone de una región Firestore local; `nam5` prioriza disponibilidad y durabilidad para datos jurídicos. Solo se crea la primera base Standard elegible para cuota gratuita, con PITR deshabilitado.
 
-El propietario debe crear proyectos separados de development/staging/production y configurar:
+Estado real de DEV:
 
-- Firebase web app y las seis variables `NEXT_PUBLIC_FIREBASE_*`;
-- Email/Password Auth, dominios autorizados y plantillas/action handler;
-- Firebase Authentication with Identity Platform y registro/despliegue de `blockPublicUserCreation` como hook `beforeCreate`;
-- Firestore y Storage en una región aprobada;
-- service account de mínimo privilegio mediante secretos Vercel: `FIREBASE_PROJECT_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_PRIVATE_KEY`;
-- despliegue revisado de `firestore.rules`, `storage.rules` e índices;
-- roles/permisos iniciales, primera administradora y claims;
-- proveedor de correo de invitaciones, alertas de presupuesto, logs y backups.
+- app web Firebase y cinco variables públicas locales: configuradas;
+- Email/Password Auth: habilitado;
+- Firestore Standard `freeTier: true`: creado en `nam5`, PITR deshabilitado y delete protection habilitada;
+- `firestore.rules` e índices: desplegados;
+- credenciales Admin locales/Vercel: pendientes de generación y configuración segura;
+- dominios, plantillas/action handler, roles/permisos iniciales, primera administradora y proveedor de invitaciones: pendientes.
 
-No se debe desplegar `blockPublicUserCreation` hasta enlazar una cuenta de facturación al plan Blaze y configurar alertas/límites. Identity Platform habilita blocking functions y MFA; no se activa automáticamente como efecto de esta documentación.
+Staging y producción no se crean en esta fase. Cuando se autoricen deberán ser proyectos separados; nunca se reutiliza DEV ni infraestructura de otros clientes.
+
+No se crea ni vincula cuenta de facturación. Storage, Cloud Functions, Identity Platform, SMS MFA, TTL, PITR, backups administrados, restore y clone están diferidos. La única API habilitada manualmente para esta activación fue Cloud Firestore.
 
 ## Vercel
 

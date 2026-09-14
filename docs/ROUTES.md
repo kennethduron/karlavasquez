@@ -2,16 +2,16 @@
 
 ## Implementadas
 
-| Ruta                                      | Propósito                             | Protección                    |
-| ----------------------------------------- | ------------------------------------- | ----------------------------- |
-| `/iniciar-sesion`                         | Login interno Firebase                | Pública, sin signup           |
-| `/recuperar-acceso`                       | Enviar recuperación                   | Respuesta no enumerable       |
-| `/actualizar-contrasena`                  | Confirmar `oobCode`                   | Código Firebase válido        |
-| `/panel`                                  | Shell privado, no dashboard funcional | Sesión server-side            |
-| `/panel/seguridad`                        | Información de sesión                 | Sesión server-side            |
-| `/panel/sin-permiso`                      | Estado forbidden                      | Privada                       |
-| `POST/DELETE /api/auth/session`           | Crear/cerrar cookie                   | Origin + Admin SDK            |
-| `GET /api/documents/[documentId]/content` | Streaming privado                     | Sesión + permiso + expediente |
+| Ruta                                                                                                   | Propósito                             | Protección              |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------- | ----------------------- |
+| `/iniciar-sesion`                                                                                      | Login interno Firebase                | Pública, sin signup     |
+| `/recuperar-acceso`                                                                                    | Enviar recuperación                   | Respuesta no enumerable |
+| `/actualizar-contrasena`                                                                               | Confirmar `oobCode`                   | Código Firebase válido  |
+| `/panel`                                                                                               | Shell privado, no dashboard funcional | Sesión server-side      |
+| `/panel/seguridad`                                                                                     | Información de sesión                 | Sesión server-side      |
+| `/panel/sin-permiso`                                                                                   | Estado forbidden                      | Privada                 |
+| `POST/DELETE /api/auth/session`                                                                        | Crear/cerrar cookie                   | Origin + Admin SDK      |
+| El endpoint de contenido binario está diferido por la política Spark y no existe en el runtime actual. |
 
 El proxy redirige de forma optimista cuando falta la cookie, pero el layout y endpoints hacen la comprobación criptográfica real. Los IDs enviados por URL nunca otorgan acceso por sí mismos.
 

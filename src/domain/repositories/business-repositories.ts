@@ -33,6 +33,16 @@ export interface CaseRepository {
 export interface DocumentRepository {
   findById(id: string): Promise<LegalDocument | null>;
 }
+export interface DocumentBinaryStorage {
+  readonly status: "available" | "deferred";
+  open(storageKey: string): Promise<AsyncIterable<Uint8Array>>;
+  save(
+    storageKey: string,
+    content: AsyncIterable<Uint8Array>,
+    mimeType: string,
+  ): Promise<void>;
+  delete(storageKey: string): Promise<void>;
+}
 export interface TaskRepository {
   findById(id: string): Promise<LegalTask | null>;
 }

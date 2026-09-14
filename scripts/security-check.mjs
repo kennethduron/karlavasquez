@@ -21,15 +21,8 @@ if (packageJson.includes('"@supabase/')) {
   failures.push("Supabase remains an active runtime dependency.");
 }
 
-const authBlocker = read("firebase-functions/index.js");
-if (
-  !authBlocker.includes("beforeUserCreated") ||
-  !authBlocker.includes("permission-denied")
-) {
-  failures.push(
-    "Public Firebase Auth signup lacks a blocking beforeCreate hook.",
-  );
-}
+if (existsSync(join(root, "firebase-functions")))
+  failures.push("Cloud Functions must not be configured on the Spark plan.");
 
 const sourceFiles = walk(join(root, "src")).filter((path) =>
   [".ts", ".tsx", ".js", ".mjs"].includes(extname(path)),
@@ -62,6 +55,8 @@ if (!admin.startsWith('import "server-only";'))
   failures.push("Firebase Admin is not server-only.");
 if (!admin.includes("getApps().length"))
   failures.push("Firebase Admin can initialize duplicate apps.");
+if (/firebase-admin\/storage|getAdminStorage/.test(admin))
+  failures.push("Firebase Storage is active despite the Spark-only policy.");
 
 const sessionRoute = read("src/app/api/auth/session/route.ts");
 for (const control of [
@@ -93,19 +88,29 @@ for (const control of [
     failures.push(`Firestore control missing: ${control}`);
 }
 
-const storageRules = read("storage.rules");
-for (const control of [
-  "private-legal-documents/{caseId}/{documentId}/{versionId}",
-  "request.resource.size <= 25 * 1024 * 1024",
-  "application/pdf",
-  "allow update: if false",
-]) {
-  if (!storageRules.includes(control))
-    failures.push(`Storage control missing: ${control}`);
-}
-if (/"hosting"\s*:/.test(read("firebase.json"))) {
+const firebaseConfig = read("firebase.json");
+if (/"hosting"\s*:/.test(firebaseConfig)) {
   failures.push("Firebase Hosting is configured; Vercel is the active host.");
 }
+if (/"storage"\s*:|"functions"\s*:/.test(firebaseConfig))
+  failures.push("Paid Firebase Storage or Functions is configured.");
+if (existsSync(join(root, "storage.rules")))
+  failures.push("Active Storage Rules must be absent on Spark.");
+if (
+  existsSync(
+    join(
+      root,
+      "src",
+      "app",
+      "api",
+      "documents",
+      "[documentId]",
+      "content",
+      "route.ts",
+    ),
+  )
+)
+  failures.push("Binary document endpoint must be deferred on Spark.");
 
 for (const migration of [
   "202609130001_initial_schema.sql",

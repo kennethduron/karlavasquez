@@ -17,8 +17,6 @@ export const PERMISSIONS = [
   "cases.finalize",
   "cases.archive",
   "documents.view",
-  "documents.upload",
-  "documents.manage",
   "tasks.view",
   "tasks.create",
   "tasks.edit",

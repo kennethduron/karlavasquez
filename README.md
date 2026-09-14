@@ -4,10 +4,10 @@ Fundación de autenticación e infraestructura del CRM jurídico. Esta rama corr
 
 ## Plataforma vigente
 
-- Backend actual: Firebase
+- Backend actual: Firebase Spark (billing deshabilitado)
 - Datos: Cloud Firestore
 - Identidad: Firebase Authentication
-- Archivos privados: Firebase Storage con autorización server-side
+- Binarios jurídicos: diferidos por política Spark; Firestore conserva solo metadata
 - Hosting: Vercel (no Firebase Hosting)
 - Backend futuro: Supabase/PostgreSQL
 
@@ -24,7 +24,7 @@ npm run firebase:emulators
 npm run dev
 ```
 
-Los emuladores permiten validar Auth, Firestore y Storage sin credenciales reales. Para un proyecto Firebase real deben configurarse las variables documentadas en `.env.example`; nunca se versionan secretos.
+Los emuladores permiten validar Auth y Firestore sin credenciales reales. `test:firebase:real` crea una identidad huérfana temporal en DEV, comprueba que Rules niega acceso y elimina la cuenta en el mismo proceso. Para un proyecto Firebase real deben configurarse las variables documentadas en `.env.example`; nunca se versionan secretos. Cloud Storage y Cloud Functions no forman parte del runtime actual.
 
 ## Validación
 
@@ -36,6 +36,7 @@ npm test
 npm run test:rules
 npm run test:e2e
 npm run test:e2e:firebase
+npm run test:firebase:real # manual; requiere .env.local y usa solo DEV
 npm run security:check
 npm run build
 ```

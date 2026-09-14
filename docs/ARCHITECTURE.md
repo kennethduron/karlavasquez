@@ -7,10 +7,11 @@
 | Aplicación web y hosting  | Next.js en Vercel               | Vercel                         |
 | Autenticación             | Firebase Authentication         | Por evaluar en migración       |
 | Datos                     | Cloud Firestore                 | Supabase/PostgreSQL            |
-| Archivos jurídicos        | Firebase Storage + servidor     | Storage privado compatible     |
+| Metadata de documentos    | Cloud Firestore                 | Supabase/PostgreSQL            |
+| Binarios jurídicos        | Diferidos por política Spark    | Storage privado compatible     |
 | Operaciones privilegiadas | Firebase Admin SDK, server-only | Adaptador Supabase server-only |
 
-`CURRENT_BACKEND = Firebase`. `FUTURE_BACKEND = Supabase/PostgreSQL`. Las migraciones de Phase 0 se conservan como referencia histórica y no participan del runtime actual.
+`CURRENT_BACKEND = Firebase Spark`. `BILLING = DISABLED`. `FUTURE_BACKEND = Supabase/PostgreSQL`. Las migraciones de Phase 0 se conservan como referencia histórica y no participan del runtime actual. Firebase Storage y Cloud Functions no se usan.
 
 ## Capas obligatorias
 
@@ -23,7 +24,7 @@ Domain repository interfaces
           ↓
 Firebase adapters
           ↓
-Auth / Firestore / Storage / Admin SDK
+Auth / Firestore / Admin SDK
 ```
 
 - `src/domain` contiene entidades y contratos sin tipos Firebase.
@@ -40,7 +41,8 @@ Esta frontera permite crear adaptadores `Supabase*Repository` futuros sin recons
 - Intercambio de ID token por cookie de sesión segura.
 - Panel protegido en servidor y shell responsive de fundación.
 - Repositorios para usuarios, consultas, clientes, expedientes, notas, documentos, tareas, eventos, roles y auditoría.
-- Reglas e índices de Firestore; reglas privadas de Storage.
+- Reglas e índices de Firestore compatibles con Spark.
+- Metadata conceptual de documentos; almacenamiento binario diferido.
 - Emulator Suite y pruebas de ataques por rol.
 
 No incluye dashboard funcional, Home completa ni módulos CRUD. No se despliega ni conecta dominio en esta fase.
@@ -66,6 +68,6 @@ No incluye dashboard funcional, Home completa ni módulos CRUD. No se despliega 
 - Login/logout/recuperación, sesión server-side y guardas.
 - Roles, permisos, custom claims y estado de cuenta.
 - Repositorios, IDs humanos, auditoría y documentos privados.
-- Reglas Firestore/Storage, emuladores y pruebas de ataque.
+- Reglas Firestore, emuladores Auth/Firestore y pruebas de ataque.
 
 No se hizo cherry-pick ni merge del commit Supabase.

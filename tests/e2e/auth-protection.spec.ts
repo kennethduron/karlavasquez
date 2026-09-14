@@ -106,3 +106,32 @@ test("@firebase rejects a disabled Firebase Authentication account", async ({
   );
   await expect(page).toHaveURL(/\/iniciar-sesion/);
 });
+
+test("@firebase denies an authenticated orphan without a CRM profile", async ({
+  page,
+  context,
+}) => {
+  test.skip(
+    !process.env.FIRESTORE_EMULATOR_HOST,
+    "Firebase emulators are required",
+  );
+  await page.goto("/iniciar-sesion");
+  await page.getByLabel("Correo electrónico").fill("orphan@knv.test");
+  await page
+    .getByLabel("Contraseña", { exact: true })
+    .fill("Legal-Segura-2026!");
+  const sessionResponsePromise = page.waitForResponse(
+    (response) =>
+      response.url().endsWith("/api/auth/session") &&
+      response.request().method() === "POST",
+  );
+  await page.getByRole("button", { name: "Ingresar al panel" }).click();
+  const sessionResponse = await sessionResponsePromise;
+  expect(sessionResponse.status()).toBe(403);
+  expect(
+    (await context.cookies()).some((cookie) => cookie.name === "knv_session"),
+  ).toBe(false);
+  await expect(page).toHaveURL(/\/iniciar-sesion/);
+  await page.goto("/panel");
+  await expect(page).toHaveURL(/\/iniciar-sesion/);
+});

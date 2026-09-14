@@ -19,9 +19,9 @@ La configuración web `NEXT_PUBLIC_FIREBASE_*` es pública por diseño; Security
 
 No existe `allow read, write: if request.auth != null`. Las reglas fallan cerrado por colección, permiso y asignación. Campos privilegiados e identificadores relacionales son inmutables o requieren permiso específico. Contadores, idempotencia y auditoría solo se escriben en servidor.
 
-## Storage
+## Documentos binarios
 
-Documentos viven bajo IDs técnicos, sin nombres sensibles. Acceso requiere usuario activo, permiso y expediente autorizado. La política inicial admite PDF, JPEG, PNG y DOCX hasta 25 MiB. Las versiones no se actualizan in-place. La aplicación sirve bytes mediante Admin después de autorizar y no entrega URLs públicas persistentes.
+`BINARY_DOCUMENT_STORAGE = DEFERRED_BY_FREE_TIER_POLICY`. No existe bucket, endpoint binario ni adaptador activo. Firestore solo conserva metadata y nunca bytes. La futura activación requerirá revisión separada de proveedor, acceso privado, validación de firma, nombres seguros, cuarentena, antivirus y retención.
 
 Antes de habilitar uploads reales se deben agregar validación de firma mágica, nombre seguro, cuarentena, análisis antimalware, retención y recuperación de incidentes.
 
@@ -33,11 +33,13 @@ Los audit logs se crean server-side con request ID y metadata sanitizada. Nunca 
 
 CI usa lockfile, format, typecheck, lint, unit tests, emuladores, build, Playwright y secret scanning. `npm audit` se reporta honestamente; un hallazgo de tooling de desarrollo no se presenta como vulnerabilidad de runtime sin analizar su alcance.
 
+Auditoría del 2026-09-13: 9 moderadas, 0 high y 0 critical. Siete pertenecen al árbol de `firebase-tools` usado solo en desarrollo/CI (`@opentelemetry/core`, `csv-parse`, `qs`, `stream-json` y transitivas). Dos alertas `gaxios`/`uuid` aparecen en producción por el subárbol `@google-cloud/storage` incluido transitivamente por `firebase-admin`, aunque la aplicación no importa ni inicializa Storage. No existe corrección compatible ofrecida por npm sin un downgrade mayor de `firebase-tools`; no se aplica `audit fix --force`. Se debe reevaluar al actualizar Firebase Admin/CLI.
+
 ## Pendiente antes de producción
 
-- Proyecto Firebase real separado por entorno y presupuesto/alertas.
+- Mantener el proyecto DEV real en Spark y sin billing; staging/production requieren autorización y aislamiento propios.
 - App Check: `READY_FOR_LATER`, no aplicado todavía. Registrar la app web con reCAPTCHA Enterprise, validar local/preview con debug tokens, observar métricas y solo después habilitar enforcement; nunca reemplaza Rules ni autorización server-side.
-- MFA: disponible con Firebase Authentication with Identity Platform. Se recomienda TOTP para `Administradora` antes de producción por evitar dependencia/costo de SMS; requiere implementar enrollment/recovery y política de reautenticación después de activar Identity Platform.
+- MFA: `DEFERRED_FREE_TIER_CONSTRAINT`. La arquitectura podrá incorporar TOTP si en el futuro se autoriza Identity Platform; no se usa SMS ni se presenta MFA como activa.
 - SMTP/proveedor de invitaciones y plantillas revisadas.
 - Antivirus, retención, backups/exportación y simulacro de restauración.
 - Monitoreo, rate limiting y respuesta a incidentes.

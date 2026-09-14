@@ -41,11 +41,12 @@ export type Note = EntityBase & {
 export type LegalDocument = EntityBase & {
   caseId: string | null;
   clientId: string | null;
-  storagePath: string;
-  title: string;
+  categoryId: string | null;
+  name: string;
   mimeType: string;
-  sizeBytes: number;
-  uploadedBy: string;
+  size: number;
+  status: string;
+  createdBy: string;
 };
 
 export type LegalTask = EntityBase & {

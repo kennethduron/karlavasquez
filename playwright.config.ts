@@ -27,7 +27,6 @@ export default defineConfig({
           NEXT_PUBLIC_FIREBASE_API_KEY: "fake-api-key",
           NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "knv-local.firebaseapp.com",
           NEXT_PUBLIC_FIREBASE_PROJECT_ID: "knv-local",
-          NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET: "knv-local.appspot.com",
           NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "123456789",
           NEXT_PUBLIC_FIREBASE_APP_ID: "1:123456789:web:knvlocal",
           NEXT_PUBLIC_USE_FIREBASE_EMULATORS: "true",
@@ -36,8 +35,6 @@ export default defineConfig({
             process.env.FIREBASE_AUTH_EMULATOR_HOST ?? "127.0.0.1:9099",
           FIRESTORE_EMULATOR_HOST:
             process.env.FIRESTORE_EMULATOR_HOST ?? "127.0.0.1:8080",
-          FIREBASE_STORAGE_EMULATOR_HOST:
-            process.env.FIREBASE_STORAGE_EMULATOR_HOST ?? "127.0.0.1:9199",
         }
       : undefined,
   },

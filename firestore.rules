@@ -103,15 +103,7 @@ service cloud.firestore {
       allow read: if hasPermission('documents.view') &&
         ((resource.data.caseId != null && canAccessCase(resource.data.caseId)) ||
           (resource.data.caseId == null && resource.data.clientId != null && hasPermission('clients.view')));
-      allow create: if hasPermission('documents.upload') &&
-        request.resource.data.uploadedBy == request.auth.uid &&
-        ((request.resource.data.caseId != null && canAccessCase(request.resource.data.caseId)) ||
-          (request.resource.data.caseId == null && request.resource.data.clientId != null && hasPermission('clients.view')));
-      allow update: if hasPermission('documents.manage') &&
-        immutable(['caseId', 'clientId', 'storagePath', 'uploadedBy', 'createdAt']) &&
-        ((resource.data.caseId != null && canAccessCase(resource.data.caseId)) ||
-          (resource.data.caseId == null && resource.data.clientId != null && hasPermission('clients.view')));
-      allow delete: if false;
+      allow create, update, delete: if false;
     }
 
     match /tasks/{taskId} {

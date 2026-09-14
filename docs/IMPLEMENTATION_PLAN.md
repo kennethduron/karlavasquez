@@ -6,7 +6,7 @@ Commit aprobado `1d837ee6381c6afad32926ccbbb0b4bdf1844265`: fundación y modelo 
 
 ## Phase 1 — Firebase Auth e infraestructura (actual)
 
-- Firebase Auth, Admin, Firestore, Storage y Emulator Suite.
+- Firebase Auth, Admin, Firestore y Emulator Suite, compatibles con Spark.
 - Sesión HttpOnly validada server-side.
 - Roles + permisos + custom claims compactos.
 - Interfaces de repositorio y adaptadores Firebase.
@@ -15,7 +15,9 @@ Commit aprobado `1d837ee6381c6afad32926ccbbb0b4bdf1844265`: fundación y modelo 
 - login y shell CRM responsive de fundación.
 - documentación Firebase/Vercel y ruta futura a Supabase.
 
-Criterio de salida: gates locales pasan o se reporta un bloqueo externo real. No requiere proyecto Firebase real para completar arquitectura/emuladores. No incluye módulos funcionales ni deploy.
+Criterio de salida: gates locales y smoke tests del proyecto DEV real pasan o se reporta un bloqueo externo verificable. No incluye módulos funcionales ni deploy.
+
+El almacenamiento binario jurídico, Cloud Functions, Identity Platform y MFA están diferidos por política de nivel gratuito. Firestore conserva únicamente metadata de documentos; no almacena PDFs, DOCX, imágenes ni otros binarios.
 
 ## Phase 2 — requiere aprobación explícita
 
@@ -25,7 +27,8 @@ Después podrán planificarse, cada uno como alcance separado: intake; consultas
 
 ## Restricciones vigentes
 
-- Backend actual Firebase; Supabase/PostgreSQL futuro.
+- Backend actual Firebase Spark; Supabase/PostgreSQL futuro.
+- Billing deshabilitado; no Blaze, Storage, Cloud Functions, Identity Platform, SMS ni servicios pay-as-you-go.
 - Hosting Vercel; no Firebase Hosting.
 - Sin deploy de producción ni conexión de dominio.
 - Sin merge a main.

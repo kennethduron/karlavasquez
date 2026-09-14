@@ -16,15 +16,12 @@ describe("permission helpers", () => {
   it("requires every requested permission", () => {
     expect(
       hasEveryPermission(
-        ["documents.view", "documents.upload"],
-        ["documents.view", "documents.upload"],
+        ["documents.view", "cases.view"],
+        ["documents.view", "cases.view"],
       ),
     ).toBe(true);
     expect(
-      hasEveryPermission(
-        ["documents.view"],
-        ["documents.view", "documents.manage"],
-      ),
+      hasEveryPermission(["documents.view"], ["documents.view", "cases.edit"]),
     ).toBe(false);
   });
 });

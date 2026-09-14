@@ -28,16 +28,15 @@ En el proyecto Firebase real se debe:
 
 No se inventan credenciales ni se registran enlaces de invitación.
 
-## Bloqueo de signup público
+## Signup público y autorización fail-closed
 
-No basta con omitir una pantalla de registro porque la configuración web Firebase es pública. `firebase-functions/index.js` define `blockPublicUserCreation`, un hook `beforeUserCreated` que rechaza altas iniciadas mediante SDK/REST; el alta administrativa sigue usando Admin SDK. Para activarlo, el proyecto real debe actualizar Firebase Authentication a Identity Platform, desplegar la función y registrarla como blocking function. Sin esa configuración externa, los datos y `/panel` siguen fallando cerrado por falta de perfil/claims, pero la creación de una identidad huérfana no queda bloqueada en el servicio Auth.
+La aplicación no expone pantalla, botón ni endpoint propio de registro. Los usuarios internos se crean únicamente mediante una operación administrativa server-only con Firebase Admin SDK. No se usan `beforeUserCreated`, Cloud Functions ni Identity Platform porque el proyecto debe permanecer en Spark sin billing.
 
-### Decisión Phase 1.1
+La API pública de Firebase Auth puede permitir que alguien cree una identidad directamente mientras Email/Password esté habilitado. Esa identidad no equivale a un usuario del CRM: para emitir una cookie y acceder a datos se exige un perfil existente con `status = active`, rol autorizado, permisos efectivos y `permissionVersion` válida. Si falta cualquiera de estos controles, `/api/auth/session` responde `403`, `/panel` permanece cerrado y las reglas de Firestore rechazan lecturas y escrituras.
 
-- **Opción A — blocking function:** es la seleccionada para cumplir estrictamente “sin creación pública de usuarios”. Firebase exige Authentication with Identity Platform para `beforeUserCreated`. El despliegue de Cloud Functions exige plan Blaze; se deben vincular facturación, alertas de presupuesto y límites antes de desplegar.
-- **Opción B — sin UI/API de signup + Admin SDK:** sigue siendo defensa complementaria y el único flujo administrativo de alta, pero por sí sola no impide que alguien invoque el endpoint público de creación de Firebase Auth. Una identidad huérfana no obtendría perfil, claims, cookie de sesión ni acceso a datos, pero su creación incumpliría el requisito estricto.
+Los tests de ataque incluyen una cuenta Auth huérfana, sin perfil, rol ni permisos, e intentos contra `/panel`, clientes, consultas, expedientes, auditoría y administración. El resultado obligatorio es `DENIED`.
 
-Identity Platform no se activa silenciosamente. La activación queda pendiente de un proyecto Firebase DEV aislado y aprobación consciente de la vinculación de facturación necesaria para desplegar la función. Para email/password, Identity Platform mantiene una franja gratuita de MAU; los costos potenciales proceden del uso que exceda cuotas y de Cloud Functions/servicios Blaze.
+Esta es la decisión explícita de Phase 1.1: el alta legítima es administrativa y la autorización siempre falla cerrado. Impedir incluso la creación de identidades huérfanas en el servicio Auth requeriría capacidades fuera de la política Spark y queda fuera de alcance.
 
 ## Primera administradora
 

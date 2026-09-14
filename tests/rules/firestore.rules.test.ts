@@ -40,8 +40,6 @@ const personas = {
     "cases.create",
     "cases.edit",
     "documents.view",
-    "documents.upload",
-    "documents.manage",
   ],
   administrator: ["*"],
 };
@@ -91,16 +89,26 @@ async function seed() {
     await setDoc(doc(db, "documents", "document-a"), {
       caseId: "assigned-case",
       clientId: "client-a",
-      storagePath: "private-legal-documents/assigned-case/document-a/v1",
-      uploadedBy: "lawyer",
+      categoryId: "pleading",
+      name: "Escrito.pdf",
+      mimeType: "application/pdf",
+      size: 1200,
+      status: "pending_storage",
+      createdBy: "lawyer",
       createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     });
     await setDoc(doc(db, "documents", "private-document"), {
       caseId: "private-case",
       clientId: "client-b",
-      storagePath: "private-legal-documents/private-case/private-document/v1",
-      uploadedBy: "administrator",
+      categoryId: "evidence",
+      name: "Evidencia.pdf",
+      mimeType: "application/pdf",
+      size: 1200,
+      status: "pending_storage",
+      createdBy: "administrator",
       createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
     });
     await setDoc(doc(db, "notes", "note-a"), {
       caseId: "assigned-case",
@@ -154,6 +162,36 @@ describe("anonymous attacker", () => {
   ])("cannot read %s", async (collectionName, id) => {
     const db = environment.unauthenticatedContext().firestore();
     await assertFails(getDoc(doc(db, collectionName, id)));
+  });
+});
+
+describe("orphan authenticated identity", () => {
+  it.each([
+    ["clients", "client-a"],
+    ["consultations", "new-consultation"],
+    ["cases", "assigned-case"],
+    ["auditLogs", "audit-a"],
+    ["roles", "administrator"],
+    ["permissions", "cases.assign"],
+  ])(
+    "cannot read %s without an active CRM profile",
+    async (collectionName, id) => {
+      const db = environment.authenticatedContext("orphan").firestore();
+      await assertFails(getDoc(doc(db, collectionName, id)));
+    },
+  );
+
+  it("cannot create data or grant itself administration", async () => {
+    const db = environment.authenticatedContext("orphan").firestore();
+    await assertFails(
+      setDoc(doc(db, "consultations", "orphan-write"), {
+        createdBy: "orphan",
+        responsibleUserId: "orphan",
+      }),
+    );
+    await assertFails(
+      updateDoc(doc(db, "roles", "administrator"), { name: "Orphan admin" }),
+    );
   });
 });
 

@@ -67,14 +67,18 @@ Consulta `CON-YYYY-NNNN`, cliente `CLI-YYYY-NNNN` y expediente `KNV-YYYY-NNNN` s
 
 `FirebaseAuditRepository` usa Admin SDK y escribe actor UID, acción, tipo/ID de entidad, timestamp de servidor, resultado, request ID y metadata sanitizada. Las reglas deniegan create/update/delete directo; usuarios con `audit.view` solo leen. Metadata no debe incluir tokens, contenido jurídico ni datos personales innecesarios.
 
-## Archivos privados
+## Metadata y binarios de documentos
 
-La ruta técnica es `private-legal-documents/{caseId}/{documentId}/{versionId}` sin nombres personales. Las reglas requieren usuario activo, permisos, relación de expediente y metadata consistente; limitan a PDF/JPEG/PNG/DOCX y 25 MiB.
+Firestore conserva exclusivamente metadata conceptual: IDs, expediente, cliente, categoría, nombre, MIME, tamaño, estado, autor y fechas. Nunca almacena PDF, DOCX, imágenes u otros bytes. La escritura directa de metadata desde el SDK cliente falla cerrada en Phase 1.
 
-El flujo preferente de lectura es `GET /api/documents/{id}/content`: sesión HttpOnly → PermissionService → expediente asignado → Admin Storage → streaming `private, no-store`. No se usa `getDownloadURL()` ni un token público persistente. El upload completo, validación de firma mágica y antivirus pertenecen a la fase de documentos.
+`DocumentBinaryStorage` define una frontera tecnológica basada en claves opacas y streams. No tiene adaptador activo. En el futuro podrá implementarse con `FirebaseStorageAdapter` —solo si se autoriza Blaze— o `SupabaseStorageAdapter` sin cambiar entidades, servicios o UI. `DOCUMENT_BINARY_UPLOAD_STATUS = DEFERRED`.
 
 ## Vercel
 
 No existe configuración Firebase Hosting. Next.js es compatible con Vercel, con objetivo temporal deseado `bufetekarlavasquez.vercel.app` si está disponible y dominio futuro `bufetekarlavasquez.com`. Esta fase no crea ni despliega esos recursos.
 
-Una blocking function de Identity Platform se versiona exclusivamente para impedir self-signup directo. No aloja Next.js ni reemplaza Vercel; requiere activación y despliegue explícitos en el proyecto Firebase real.
+No se configuran Cloud Functions, Firebase Hosting, Identity Platform ni servicios sujetos a billing. La protección contra identidades huérfanas es fail-closed: Auth por sí solo nunca concede acceso; se exigen perfil activo, roles, permisos y versión válida antes de emitir la cookie de sesión.
+
+## Uso consciente de Spark
+
+La primera y única base Firestore recibe la cuota gratuita: 1 GiB, 50,000 lecturas/día, 20,000 escrituras/día, 20,000 borrados/día y 10 GiB/mes de salida según la documentación vigente. Los repositorios deben usar paginación por cursor, límites e índices; se evitan collection scans, listeners globales, polling y patrones N+1. Agregados se mantienen transaccionalmente server-side cuando sea viable. TTL, PITR, backups administrados, restore, clone y bases adicionales quedan diferidos porque requieren billing.

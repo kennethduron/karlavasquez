@@ -10,12 +10,15 @@ module.exports = async function globalSetup() {
   const auth = getAuth(app);
   const db = getFirestore(app);
   const email = "lawyer@knv.test";
+  const orphanEmail = "orphan@knv.test";
 
-  try {
-    const existing = await auth.getUserByEmail(email);
-    await auth.deleteUser(existing.uid);
-  } catch {
-    // A missing emulator identity is the expected first-run state.
+  for (const testEmail of [email, orphanEmail, "disabled@knv.test"]) {
+    try {
+      const existing = await auth.getUserByEmail(testEmail);
+      await auth.deleteUser(existing.uid);
+    } catch {
+      // A missing emulator identity is the expected first-run state.
+    }
   }
 
   const user = await auth.createUser({
@@ -59,5 +62,10 @@ module.exports = async function globalSetup() {
     email: "disabled@knv.test",
     password: "Legal-Segura-2026!",
     disabled: true,
+  });
+  await auth.createUser({
+    uid: "orphan-e2e",
+    email: orphanEmail,
+    password: "Legal-Segura-2026!",
   });
 };

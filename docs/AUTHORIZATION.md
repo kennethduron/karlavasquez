@@ -8,7 +8,7 @@ La autorización requiere concordancia entre:
 2. perfil Firestore activo con permisos efectivos;
 3. documentos de roles y permisos;
 4. `PermissionService` server-side;
-5. Firestore y Storage Security Rules.
+5. Firestore Security Rules; almacenamiento binario diferido.
 
 La UI solo representa capacidades; no es una barrera.
 
