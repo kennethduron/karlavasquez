@@ -43,6 +43,8 @@ CI usa lockfile, format, typecheck, lint, unit tests, emuladores, build, Playwri
 
 Auditoría del 2026-09-13: 9 moderadas, 0 high y 0 critical. Siete pertenecen al árbol de `firebase-tools` usado solo en desarrollo/CI (`@opentelemetry/core`, `csv-parse`, `qs`, `stream-json` y transitivas). Dos alertas `gaxios`/`uuid` aparecen en producción por el subárbol `@google-cloud/storage` incluido transitivamente por `firebase-admin`, aunque la aplicación no importa ni inicializa Storage. No existe corrección compatible ofrecida por npm sin un downgrade mayor de `firebase-tools`; no se aplica `audit fix --force`. Se debe reevaluar al actualizar Firebase Admin/CLI.
 
+Firebase Admin 14.4.0 incluye `jwks-rsa` 4.1.0, cuyo cargador CommonJS depende de la interoperabilidad nativa `require(esm)` de Node para abrir `jose` 6. El runtime empaquetado de Vercel no preserva esa interoperabilidad y la validación de tokens falla antes de ejecutarse. Mientras el defecto upstream siga abierto, el lockfile limita únicamente `firebase-admin > jwks-rsa > jose` a la última versión compatible de la serie 4 (`4.15.9`), que conserva las operaciones JWK utilizadas por el SDK. La CLI mantiene su propia copia de `jose` 6. Este override debe retirarse al adoptar una versión de Firebase Admin o `jwks-rsa` que resuelva el defecto y siempre debe volver a pasar `npm audit`, build y la prueba de sesión real.
+
 ## Pendiente antes de producción
 
 - Mantener el proyecto DEV real en Spark y sin billing; staging/production requieren autorización y aislamiento propios.
