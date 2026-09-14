@@ -1,17 +1,36 @@
 import type { Metadata } from "next";
+
+import { siteConfig } from "@/content/site";
+
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
-  ),
+  metadataBase: new URL(siteConfig.canonicalUrl),
   title: {
-    default: "Karla Norin Vásquez — Bufete Legal",
-    template: "%s | Karla Norin Vásquez",
+    default: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
+    template: `%s | ${siteConfig.professionalName}`,
   },
-  description:
-    "Asesoría Legal, honestidad, confiabilidad, precisión. Solución.",
-  robots: { index: false, follow: false },
+  description: siteConfig.slogan,
+  applicationName: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
+  authors: [{ name: siteConfig.professionalName }],
+  creator: siteConfig.professionalName,
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: "website",
+    locale: "es_HN",
+    siteName: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
+    title: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
+    description: siteConfig.slogan,
+    url: siteConfig.canonicalUrl,
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
+      },
+    ],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

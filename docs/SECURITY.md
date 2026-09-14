@@ -1,5 +1,11 @@
 # Seguridad
 
+## Superficie pública de Phase 2
+
+Los formularios de consulta y contacto son demostraciones de UI con validación local. No importan adaptadores Firebase, no ejecutan `fetch`, no tienen Route Handler ni Server Action y no producen escrituras o correo. El control automatizado `security:check` falla si la UI pública incorpora SDK Firestore/Storage o primitivas de escritura. El texto visible evita simular envío, cita confirmada o relación abogado-cliente.
+
+El contenido estructurado omite teléfono, domicilio, horario, reviews, ratings y demás propiedades no confirmadas. `/panel` y las APIs privadas conservan verificación server-side; publicar las rutas informativas no amplía permisos Firebase. Vercel recibe las credenciales Admin solo como variables server-only y la clave privada nunca se incluye en el bundle cliente.
+
 ## Secretos
 
 Las claves administrativas usan `FIREBASE_*` sin prefijo público y solo se importan en módulos `server-only`. `FIREBASE_PRIVATE_KEY` nunca llega al navegador ni se registra. `.env.example` contiene nombres/placeholders, no valores reales.

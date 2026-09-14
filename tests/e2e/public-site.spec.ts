@@ -1,0 +1,168 @@
+import { expect, test } from "@playwright/test";
+
+const routes = [
+  ["/", /Asesoría Legal con/],
+  ["/sobre-karla", "Conozca a Karla Norin Vásquez"],
+  ["/areas-de-practica", "Orientación jurídica con enfoque humano"],
+  [
+    "/areas-de-practica/derecho-de-familia",
+    "Orientación sensible para decisiones importantes",
+  ],
+  ["/servicios/divorcio", "Orientación clara y confidencial sobre divorcio"],
+  ["/solicitar-consulta", "Comencemos con la información esencial"],
+  ["/recursos", "Información clara para orientarse mejor"],
+  ["/contacto", "Estamos aquí para escucharle"],
+  ["/privacidad", "Política de Privacidad"],
+  ["/aviso-legal", "Aviso Legal"],
+] as const;
+
+const responsiveWidths = [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920];
+
+test("all required public routes render with shared navigation and footer", async ({
+  page,
+}) => {
+  const runtimeErrors: string[] = [];
+  page.on("pageerror", (error) => runtimeErrors.push(error.message));
+  page.on("console", (message) => {
+    if (message.type() === "error") runtimeErrors.push(message.text());
+  });
+
+  for (const [route, heading] of routes) {
+    const response = await page.goto(route);
+    expect(response?.status(), `${route} response`).toBe(200);
+    await expect(
+      page.getByRole("heading", { level: 1, name: heading }),
+    ).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    await expect(page.getByRole("main")).toHaveCount(1);
+    await expect(
+      page.getByRole("link", { name: /Karla Norin Vásquez, inicio/i }).first(),
+    ).toBeVisible();
+    await expect(page.getByRole("contentinfo")).toContainText(
+      "Contenido informativo general",
+    );
+  }
+
+  expect(runtimeErrors, "browser console and page errors").toEqual([]);
+});
+
+test("every public route avoids horizontal overflow at all required breakpoints", async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== "chromium", "Full matrix runs once");
+  test.setTimeout(240_000);
+
+  for (const width of responsiveWidths) {
+    await page.setViewportSize({ width, height: width < 600 ? 780 : 960 });
+    for (const [route] of routes) {
+      await page.goto(route);
+      const overflow = await page.evaluate(
+        () =>
+          document.documentElement.scrollWidth -
+          document.documentElement.clientWidth,
+      );
+      expect(overflow, `${route} overflow at ${width}px`).toBeLessThanOrEqual(
+        1,
+      );
+    }
+  }
+});
+
+test("mobile navigation is keyboard-accessible and closes after navigation", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const menu = page.getByRole("button", { name: "Abrir menú" });
+  await menu.focus();
+  await page.keyboard.press("Enter");
+  await expect(
+    page.getByRole("navigation", { name: "Navegación móvil" }),
+  ).toBeVisible();
+  const menuBox = await page
+    .getByRole("button", { name: "Cerrar menú" })
+    .boundingBox();
+  expect(menuBox?.width).toBeGreaterThanOrEqual(44);
+  expect(menuBox?.height).toBeGreaterThanOrEqual(44);
+  await page
+    .getByRole("navigation", { name: "Navegación móvil" })
+    .getByRole("link", { name: "Sobre Karla" })
+    .click();
+  await expect(page).toHaveURL(/\/sobre-karla$/);
+  await expect(
+    page.getByRole("button", { name: "Abrir menú" }),
+  ).toHaveAttribute("aria-expanded", "false");
+});
+
+test("consultation form validates three steps and explicitly does not submit", async ({
+  page,
+}) => {
+  await page.goto("/solicitar-consulta");
+  await page.getByRole("button", { name: /Continuar/ }).click();
+  await expect(page.getByRole("alert").first()).toBeVisible();
+  await page.getByLabel("Nombre completo").fill("Persona de Prueba");
+  await page.getByLabel("Correo electrónico").fill("persona@example.com");
+  await page.getByRole("button", { name: /Continuar/ }).click();
+  await expect(page.locator(".stepper")).toHaveAttribute(
+    "aria-label",
+    "Paso 2 de 3",
+  );
+  await page.getByLabel("Área de práctica").selectOption("derecho-de-familia");
+  await page
+    .getByLabel("Descripción general")
+    .fill("Descripción general suficiente para solicitar orientación legal.");
+  await page.getByRole("button", { name: /Continuar/ }).click();
+  await page.getByLabel(/He leído el aviso de privacidad/).check();
+  await page.getByRole("button", { name: /Validar solicitud/ }).click();
+  await expect(page.getByRole("status")).toContainText("no se envió");
+});
+
+test("contact form exposes honest validation-only feedback", async ({
+  page,
+}) => {
+  await page.goto("/contacto");
+  await page.getByRole("button", { name: "Validar mensaje" }).click();
+  await expect(page.getByRole("alert").first()).toBeVisible();
+  await page.getByLabel("Nombre completo").fill("Persona de Prueba");
+  await page.getByLabel("Correo electrónico").fill("persona@example.com");
+  await page.getByLabel("Asunto").fill("Consulta general");
+  await page
+    .getByLabel("Mensaje")
+    .fill("Este es un mensaje general con contenido suficiente para validar.");
+  await page.getByLabel("He leído el aviso de privacidad.").check();
+  await page.getByRole("button", { name: "Validar mensaje" }).click();
+  await expect(page.getByRole("status")).toContainText(
+    "ningún dato fue transmitido",
+  );
+});
+
+test("metadata, structured data, skip link and 404 are present", async ({
+  page,
+}) => {
+  await page.goto("/contacto");
+  await expect(page).toHaveTitle(/Contacto \| Karla Norin Vásquez/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+    "href",
+    "https://bufetekarlavasquez.com/contacto",
+  );
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute(
+    "content",
+    /\/opengraph-image/,
+  );
+  await expect(page.locator('link[rel="icon"]')).toHaveAttribute(
+    "href",
+    /\/icon/,
+  );
+  const structuredData = await page
+    .locator('script[type="application/ld+json"]')
+    .textContent();
+  expect(structuredData).toContain('"@type":"LegalService"');
+  expect(structuredData).not.toContain('"telephone"');
+  await expect(
+    page.getByRole("link", { name: "Saltar al contenido" }),
+  ).toBeAttached();
+  await page.goto("/ruta-inexistente-phase-2");
+  await expect(
+    page.getByRole("heading", { name: "Esta página no está disponible" }),
+  ).toBeVisible();
+});

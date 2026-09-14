@@ -19,17 +19,23 @@ Criterio de salida: gates locales y smoke tests del proyecto DEV real pasan o se
 
 El almacenamiento binario jurídico, Cloud Functions, Identity Platform y MFA están diferidos por política de nivel gratuito. Firestore conserva únicamente metadata de documentos; no almacena PDFs, DOCX, imágenes ni otros binarios.
 
-## Phase 2 — requiere aprobación explícita
+## Phase 2 — sitio público (autorizada)
 
-El siguiente trabajo recomendado es el sitio público esencial y su sistema visual final, pero **no debe comenzar** sin revisión y aprobación de esta Phase 1.
+- Diez rutas públicas, sistema visual responsive, navegación y contenido confirmado.
+- SEO técnico, Metadata API, canonical, sitemap, robots, breadcrumbs, JSON-LD y OG generado.
+- Formularios de consulta/contacto con React Hook Form + Zod, sin red ni persistencia.
+- Playwright desktop/mobile y matriz de 10 breakpoints en todas las rutas.
+- Despliegue controlado a Vercel desde el commit final de la rama Phase 2.
 
-Después podrán planificarse, cada uno como alcance separado: intake; consultas; clientes; expedientes; documentos; agenda; CMS; administración; reportes; hardening y lanzamiento.
+## Phase 3 — bloqueada hasta aprobación
+
+Siguiente alcance recomendado: intake real de consulta/contacto hacia Firestore, auditoría y notificación segura. Después podrán planificarse como alcances separados: consultas; clientes; expedientes; documentos; agenda; CMS; administración; reportes; hardening y lanzamiento.
 
 ## Restricciones vigentes
 
 - Backend actual Firebase Spark; Supabase/PostgreSQL futuro.
 - Billing deshabilitado; no Blaze, Storage, Cloud Functions, Identity Platform, SMS ni servicios pay-as-you-go.
 - Hosting Vercel; no Firebase Hosting.
-- Sin deploy de producción ni conexión de dominio.
+- Solo despliegue controlado `.vercel.app`; sin dominio personalizado ni DNS.
 - Sin merge a main.
-- Sin Home/dashboard/CRUD completos en esta fase.
+- Sin dashboard/CRUD ni persistencia pública en esta fase.

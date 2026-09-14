@@ -27,7 +27,7 @@ Los estados siempre combinan color, texto e icono cuando corresponda.
 
 ## Tipografía
 
-- Headings: Georgia/Times como fallback serif local durante la fundación. Antes del sitio final se incorporará una familia licenciada u open-source optimizada con `next/font/local`.
+- Headings: Georgia/Cambria/Times como stack serif local de rendimiento inmediato. Una fuente de marca licenciada podrá sustituirla cuando exista un archivo oficial y derechos confirmados.
 - UI/body: stack sans-serif del sistema para legibilidad y rendimiento.
 - Escala fluida con `clamp()` en títulos; cuerpo mínimo 16 px en móvil.
 - Líneas de lectura pública entre 60 y 75 caracteres.
@@ -62,7 +62,7 @@ No se diseña una pantalla de 1920 px para reducirla después. Cada componente d
 
 La arquitectura contempla `Button`, `Input`, `Textarea`, `Select`, `Checkbox`, `Radio`, date picker, `Badge`, `Card`, `Table`, modal, drawer, dropdown, tabs, breadcrumb, tooltip, empty state, skeleton, alert, toast, pagination, search, filters, sidebar y topbar.
 
-En Fase 0 se implementaron solamente `Button`, `Input` y `Card`, suficientes para validar tokens y shells sin desarrollar módulos antes de autorización. Los componentes complejos usarán primitivas Radix/shadcn cuando mejoren accesibilidad.
+Phase 2 agrega header público, drawer, footer, breadcrumbs, heroes, cards, FAQ, CTAs, buscador local y formularios accesibles. Se evita una dependencia de primitivas adicional mientras los controles nativos cubran correctamente semántica y teclado.
 
 ## Estados obligatorios
 
@@ -80,4 +80,4 @@ Cada feature debe especificar: loading/skeleton, empty, error recuperable, succe
 
 ## Assets
 
-Los mockups son referencia de jerarquía y tono. Antes de la implementación visual se necesitan archivos fuente del logo (preferible SVG/PDF vectorial y PNG transparente) y fotografías con derechos confirmados. No se recreará el emblema con CSS ni se inventarán credenciales o datos del bufete.
+Se localizaron seis referencias raster de una marca ajena, útiles solo para composición, jerarquía, ritmo, cards y CTAs. No se copió su identidad. No estaban disponibles los ocho mockups KNV, logo/isotipo vectorial ni fotografía profesional oficial. La marca tipográfica temporal y el monograma geométrico se implementan como UI sustituible; no pretenden ser el logotipo oficial. El layout funciona sin retrato y reserva una integración futura con assets reales.

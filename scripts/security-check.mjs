@@ -41,6 +41,27 @@ for (const file of sourceFiles) {
   }
 }
 
+const publicPhaseTwoFiles = [
+  ...walk(join(root, "src", "app", "(public)")),
+  ...walk(join(root, "src", "components", "public")),
+].filter((path) => [".ts", ".tsx", ".js", ".mjs"].includes(extname(path)));
+for (const file of publicPhaseTwoFiles) {
+  const source = readFileSync(file, "utf8");
+  const displayPath = relative(root, file);
+  if (
+    /firebase\/(firestore|database|storage)|@\/infrastructure\/firebase/.test(
+      source,
+    )
+  ) {
+    failures.push(
+      `Firebase runtime access in Phase 2 public UI: ${displayPath}`,
+    );
+  }
+  if (/\b(addDoc|setDoc|updateDoc|deleteDoc|writeBatch)\s*\(/.test(source)) {
+    failures.push(`Persistence call in Phase 2 public UI: ${displayPath}`);
+  }
+}
+
 for (const domainFile of walk(join(root, "src", "domain"))) {
   const source = readFileSync(domainFile, "utf8");
   if (/firebase|DocumentSnapshot|DocumentReference|Timestamp/.test(source)) {

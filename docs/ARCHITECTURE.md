@@ -35,7 +35,7 @@ Auth / Firestore / Admin SDK
 
 Esta frontera permite crear adaptadores `Supabase*Repository` futuros sin reconstruir la UI o la lógica del dominio.
 
-## Superficies de Phase 1
+## Superficies vigentes
 
 - Login, recuperación, cambio de contraseña y logout reales con Firebase Auth.
 - Intercambio de ID token por cookie de sesión segura.
@@ -44,8 +44,11 @@ Esta frontera permite crear adaptadores `Supabase*Repository` futuros sin recons
 - Reglas e índices de Firestore compatibles con Spark.
 - Metadata conceptual de documentos; almacenamiento binario diferido.
 - Emulator Suite y pruebas de ataques por rol.
+- Sitio público estático por defecto, con contenido centralizado y Metadata API.
+- Componentes cliente limitados al drawer, filtros y validación local de formularios.
+- Vercel como único hosting; Firebase Hosting continúa ausente.
 
-No incluye dashboard funcional, Home completa ni módulos CRUD. No se despliega ni conecta dominio en esta fase.
+No incluye dashboard funcional, módulos CRUD ni persistencia de formularios públicos. El despliegue de validación autorizado usa `bufetekarlavasquez.vercel.app`; el dominio personalizado no se conecta.
 
 ## Reutilización auditada de la Phase 1 Supabase
 

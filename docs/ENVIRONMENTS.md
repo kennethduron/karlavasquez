@@ -28,6 +28,6 @@ No se crea ni vincula cuenta de facturación. Storage, Cloud Functions, Identity
 
 ## Vercel
 
-Vercel es el único hosting previsto. Development target preferido: `bufetekarlavasquez.vercel.app`, sujeto a disponibilidad. Dominio futuro: `bufetekarlavasquez.com`. No se enlaza, despliega ni configura producción en Phase 1.
+Vercel es el único hosting. Phase 2 autoriza un despliegue controlado al proyecto exacto `bufetekarlavasquez` y alias `bufetekarlavasquez.vercel.app`, siempre desde el SHA final de `feat/knv-public-site-phase-2`. Si el nombre no está disponible, no se crea una variante. Dominio futuro: `bufetekarlavasquez.com`; no se conecta ni se modifica DNS.
 
-Las variables públicas y server-only se configuran por entorno en Vercel. Nunca se copian claves Admin a variables `NEXT_PUBLIC_*`.
+Las variables públicas y server-only se configuran por entorno en Vercel. Nunca se copian claves Admin a variables `NEXT_PUBLIC_*`. La URL canónica permanece en el dominio final; la navegación y QA usan temporalmente el alias `.vercel.app`.

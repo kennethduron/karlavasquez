@@ -1,6 +1,6 @@
 # Karla Norin Vásquez — plataforma legal
 
-Fundación de autenticación e infraestructura del CRM jurídico. Esta rama corresponde exclusivamente a **KNV Phase 1**.
+Sitio público y fundación autenticada del bufete jurídico. Esta rama corresponde exclusivamente a **KNV Phase 2** y conserva intacta la infraestructura aprobada de Phase 1.
 
 ## Plataforma vigente
 
@@ -11,7 +11,7 @@ Fundación de autenticación e infraestructura del CRM jurídico. Esta rama corr
 - Hosting: Vercel (no Firebase Hosting)
 - Backend futuro: Supabase/PostgreSQL
 
-No hay registro público. El panel usa una cookie de sesión `HttpOnly` emitida después de validar un ID token con Firebase Admin. Los módulos funcionales del CRM y el sitio público completo quedan fuera de esta fase.
+No hay registro público. El panel usa una cookie de sesión `HttpOnly` emitida después de validar un ID token con Firebase Admin. Los formularios públicos de consulta y contacto solo validan datos en el navegador: no escriben en Firestore, no envían correo y no crean una relación abogado-cliente. La persistencia pertenece a Phase 3.
 
 ## Desarrollo
 
@@ -55,3 +55,5 @@ npm run build
 - [Entornos](docs/ENVIRONMENTS.md)
 - [Migración futura a Supabase](docs/FUTURE_SUPABASE_MIGRATION.md)
 - [Plan](docs/IMPLEMENTATION_PLAN.md)
+- [Sitio público](docs/PUBLIC_SITE.md)
+- [Despliegue controlado en Vercel](docs/VERCEL_DEPLOYMENT.md)
