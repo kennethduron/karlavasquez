@@ -9,6 +9,8 @@
 
 `scripts/generate-brand-assets.mjs` recorta únicamente margen blanco, conserva proporciones y añade padding blanco seguro. Genera favicon 16/32/ICO, Apple 180, Android 192/512, navbar WebP 128 y OG 1200×630. El OG usa `contain` y padding, nunca estiramiento.
 
+Mientras el dominio personalizado no esté conectado, `og:image` y `twitter:image` usan el alias público estable `bufetekarlavasquez.vercel.app`; el canonical permanece en `bufetekarlavasquez.com`. Al conectar el dominio se podrá cambiar solo el origen de la imagen social.
+
 ## Imágenes editoriales generadas
 
 Se generaron diez composiciones 1536×1024 y se optimizaron a WebP (calidad 82). Lenguaje compartido: fotografía hiperrealista editorial para firma legal premium, luz natural cinematográfica, navy profundo, crema, oro discreto y madera oscura; sin texto legible, logos, sellos, datos personales, marcas de agua ni rostros identificables.

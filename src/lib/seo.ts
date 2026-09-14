@@ -17,7 +17,7 @@ export function createPageMetadata({
   const socialImage = {
     url: new URL(
       "/images/knv/opengraph-1200x630.jpg",
-      siteConfig.canonicalUrl,
+      siteConfig.deploymentUrl,
     ).toString(),
     width: 1200,
     height: 630,

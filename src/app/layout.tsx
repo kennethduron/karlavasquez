@@ -35,7 +35,10 @@ export const metadata: Metadata = {
     url: siteConfig.canonicalUrl,
     images: [
       {
-        url: "/images/knv/opengraph-1200x630.jpg",
+        url: new URL(
+          "/images/knv/opengraph-1200x630.jpg",
+          siteConfig.deploymentUrl,
+        ).toString(),
         width: 1200,
         height: 630,
         alt: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
@@ -46,7 +49,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${siteConfig.professionalName} — ${siteConfig.brandName}`,
     description: siteConfig.slogan,
-    images: ["/images/knv/opengraph-1200x630.jpg"],
+    images: [
+      new URL(
+        "/images/knv/opengraph-1200x630.jpg",
+        siteConfig.deploymentUrl,
+      ).toString(),
+    ],
   },
 };
 
