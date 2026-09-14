@@ -10,7 +10,6 @@ import Link from "next/link";
 import {
   Breadcrumbs,
   CtaBand,
-  EditorialImage,
   PageHero,
   SectionHeading,
 } from "@/components/public/sections";
@@ -44,18 +43,18 @@ export default function AboutPage() {
         eyebrow="Sobre el bufete"
         title="Conozca a Karla Norin Vásquez"
         copy="Una práctica jurídica construida sobre la escucha, la claridad y el respeto por cada persona."
+        image={{
+          src: "/images/knv/about-professional-approach.webp",
+          alt: "",
+          position: "center",
+        }}
       >
         <Link className="button button--gold" href="/solicitar-consulta">
           Solicitar consulta <ArrowRight size={18} aria-hidden="true" />
         </Link>
       </PageHero>
       <section className="public-section">
-        <div className="site-container split-section">
-          <EditorialImage
-            src="/images/knv/about-professional-approach.webp"
-            alt="Sala privada preparada para una conversación jurídica confidencial"
-            className="editorial-media--arched editorial-media--tall"
-          />
+        <div className="site-container about-philosophy-grid">
           <div>
             <SectionHeading
               eyebrow="Filosofía"
@@ -67,10 +66,10 @@ export default function AboutPage() {
               informadas. El propósito del bufete es ofrecer esa base con
               seriedad y sensibilidad.
             </p>
-            <blockquote className="brand-quote">
-              “La claridad también es una forma de acompañar.”
-            </blockquote>
           </div>
+          <blockquote className="brand-quote brand-quote--feature">
+            “La claridad también es una forma de acompañar.”
+          </blockquote>
         </div>
       </section>
       <section className="public-section public-section--cream">

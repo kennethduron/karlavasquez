@@ -53,6 +53,15 @@ export default function HomePage() {
   return (
     <main id="contenido-principal">
       <section className="home-hero">
+        <div className="home-hero-background" aria-hidden="true">
+          <Image
+            src="/images/knv/home-hero-legal.webp"
+            alt=""
+            fill
+            preload
+            sizes="100vw"
+          />
+        </div>
         <div className="site-container home-hero-grid">
           <div className="home-hero-copy">
             <p className="public-eyebrow">Karla Norin Vásquez · Bufete Legal</p>
@@ -80,19 +89,9 @@ export default function HomePage() {
                 <HeartHandshake aria-hidden="true" /> Atención personalizada
               </li>
             </ul>
-          </div>
-          <div className="home-hero-visual">
-            <div className="home-hero-media">
-              <Image
-                src="/images/knv/home-hero-legal.webp"
-                alt="Escritorio jurídico preparado con documentos y balanza de justicia"
-                fill
-                preload
-                sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) 44vw, 560px"
-                style={{ objectPosition: "center" }}
-              />
-            </div>
-            <blockquote>“{siteConfig.slogan}”</blockquote>
+            <blockquote className="home-hero-quote">
+              “{siteConfig.slogan}”
+            </blockquote>
           </div>
         </div>
       </section>

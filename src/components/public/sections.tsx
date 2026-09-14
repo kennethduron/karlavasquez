@@ -36,34 +36,37 @@ export function PageHero({
   image?: { src: string; alt: string; position?: string };
   children?: ReactNode;
 }) {
+  const hasImage = Boolean(image);
+
   return (
-    <section className="page-hero">
+    <section className={`page-hero${hasImage ? " page-hero--image" : ""}`}>
+      {image ? (
+        <div className="page-hero-background" aria-hidden="true">
+          <Image
+            src={image.src}
+            alt=""
+            fill
+            preload
+            sizes="100vw"
+            style={{ objectPosition: image.position ?? "center" }}
+          />
+        </div>
+      ) : null}
       <div className="site-container page-hero-grid">
-        <div>
+        <div className="page-hero-content">
           <p className="public-eyebrow">{eyebrow}</p>
           <h1>{title}</h1>
           <p className="page-hero-copy">{copy}</p>
           {children}
         </div>
-        {image ? (
-          <div className="page-hero-media">
-            <Image
-              src={image.src}
-              alt={image.alt}
-              fill
-              preload
-              sizes="(max-width: 767px) calc(100vw - 2rem), (max-width: 1279px) 45vw, 560px"
-              style={{ objectPosition: image.position ?? "center" }}
-            />
-          </div>
-        ) : (
+        {!image ? (
           <div className="justice-motif" aria-hidden="true">
             <span className="justice-orbit justice-orbit--one" />
             <span className="justice-orbit justice-orbit--two" />
             <Scale size={82} strokeWidth={1.1} />
             <small>KNV</small>
           </div>
-        )}
+        ) : null}
       </div>
     </section>
   );

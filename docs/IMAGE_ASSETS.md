@@ -1,4 +1,4 @@
-# Assets de imagen — KNV Phase 2.1
+# Assets de imagen — KNV Phase 2.2
 
 ## Fuentes oficiales
 
@@ -35,10 +35,14 @@ Cada prompt combinó el lenguaje compartido anterior con el concepto específico
 ## Política editorial y performance
 
 - Son imágenes ilustrativas. Nunca se describen como instalaciones reales ni como fotografía de Karla Norin Vásquez.
-- El hero Home es candidato LCP y usa preload; el resto conserva lazy loading predeterminado de `next/image`.
-- Todos los contenedores reservan espacio con aspect ratio o altura mínima. `object-position` puede ajustarse por asset sin generar variantes innecesarias.
+- El hero Home y el hero principal de cada ruta editorial son candidatos LCP independientes y usan preload; el resto conserva lazy loading predeterminado de `next/image`.
+- Home, Sobre Karla, Áreas de Práctica, Familia, Divorcio, Consulta, Recursos y Contacto usan las imágenes como fondos integrados con `fill`, `sizes="100vw"`, overlays navy y altura mínima reservada.
+- Los fondos son decorativos (`alt=""`) porque el título y el copy transmiten el contenido; las imágenes semánticas dentro del cuerpo mantienen texto alternativo descriptivo.
+- `object-position` puede ajustarse por asset y por breakpoint sin generar variantes innecesarias.
 - Los diez archivos pesan entre 76 y 182 KB aproximadamente; no se incrustan como Base64.
 
 ## Mockups
 
 Los ocho mockups KNV solicitados (Inicio, Sobre Karla, Áreas, Familia, Divorcio, Consulta, Recursos y Contacto) no estaban presentes en el workspace ni en el adjunto de Phase 2.1. Se encontraron seis imágenes de una empresa ajena en un adjunto histórico; no se utilizaron para marca, fotografía o contenido KNV.
+
+Phase 2.2 reutiliza los diez WebP aprobados sin regenerarlos. `assets/favicon.jpg` y `assets/opengraph.jpg` continúan siendo las fuentes oficiales y sus derivados no cambiaron.

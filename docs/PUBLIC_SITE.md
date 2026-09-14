@@ -1,8 +1,8 @@
-# Sitio público — KNV Phase 2.1
+# Sitio público — KNV Phase 2.2
 
 ## Alcance
 
-Phase 2.1 conserva las diez rutas documentadas en `docs/ROUTES.md` y completa su identidad visual. La arquitectura usa Server Components por defecto. Solo el drawer móvil, el filtro de recursos y los formularios requieren hidratación.
+Phase 2.2 conserva las diez rutas documentadas en `docs/ROUTES.md` y refina su identidad visual. La arquitectura usa Server Components por defecto. Solo el drawer móvil, la hora de Honduras, el filtro de recursos y los formularios requieren hidratación.
 
 El contenido repetido vive en `src/content`: configuración de marca/contacto, áreas, servicios, recursos y preguntas frecuentes. Los datos desconocidos son `null` y no se renderizan. No se inventan credenciales, domicilio, horarios, teléfono, email, resultados, testimonios ni estadísticas.
 
@@ -10,6 +10,7 @@ El contenido repetido vive en `src/content`: configuración de marca/contacto, �
 
 - `assets/favicon.jpg` y `assets/opengraph.jpg` son fuentes oficiales, se conservan sin alteración y generan derivados web reproducibles.
 - Diez imágenes editoriales generadas para KNV se sirven como WebP optimizados desde `public/images/knv/`; ninguna representa a Karla ni afirma mostrar oficinas reales.
+- El Home y siete encabezados públicos integran la imagen editorial como fondo mediante `next/image`, capas navy y gradientes de contraste. Las páginas legales conservan su composición sobria sin fotografía.
 - Los ocho mockups KNV solicitados no estaban disponibles. Las seis capturas localizadas pertenecen a otra marca y no se usaron como identidad ni contenido visual.
 - La procedencia, prompts, dimensiones, textos alternativos y política de uso se documentan en `docs/IMAGE_ASSETS.md`.
 
@@ -26,4 +27,8 @@ React Hook Form y Zod proporcionan etiquetas, errores asociados, honeypot, estad
 
 ## Rendimiento y cuota
 
-Las rutas son estáticas cuando no necesitan sesión; no hay listeners, consultas Firestore ni polling. El hero usa preload por ser candidato LCP; las imágenes restantes se cargan de forma diferida mediante `next/image`, con `sizes`, dimensiones estables y archivos WebP entre aproximadamente 75 y 182 KB. El sitio público no consume cuota Firebase.
+Las rutas son estáticas cuando no necesitan sesión; no hay listeners, consultas Firestore ni polling. Cada imagen de hero usa `next/image` con `fill`, `sizes="100vw"` y preload por ser candidata LCP de su ruta; las imágenes secundarias conservan carga diferida, dimensiones estables y archivos WebP entre aproximadamente 75 y 182 KB. El sitio público no consume cuota Firebase.
+
+## Hora de Honduras
+
+La utility bar del header muestra una hora discreta calculada exclusivamente en cliente con `Intl.DateTimeFormat`, locale `es-HN` y zona IANA `America/Tegucigalpa`. El HTML inicial utiliza un placeholder estable para evitar desajustes de hidratación; el valor se actualiza cada 30 segundos sin red, almacenamiento, geolocalización ni impacto en SEO.

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { Brand } from "@/components/public/brand";
+import { HondurasTime } from "@/components/public/honduras-time";
 import { siteConfig } from "@/content/site";
 
 export function SiteHeader() {
@@ -19,6 +20,14 @@ export function SiteHeader() {
 
   return (
     <header className="public-header">
+      <div className="public-utility-bar">
+        <div className="public-utility-inner">
+          <HondurasTime />
+          <span className="public-utility-context">
+            Atención jurídica en Honduras
+          </span>
+        </div>
+      </div>
       <div className="public-header-inner">
         <Brand />
         <nav

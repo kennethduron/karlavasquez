@@ -9,6 +9,7 @@ on:
       - feat/knv-firebase-auth-infrastructure-phase-1
       - feat/knv-public-site-phase-2
       - feat/knv-public-site-polish-phase-2-1
+      - feat/knv-public-site-polish-phase-2-2
 
 concurrency:
   group: quality-${{ github.ref }}

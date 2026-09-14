@@ -62,7 +62,7 @@ No se diseña una pantalla de 1920 px para reducirla después. Cada componente d
 
 La arquitectura contempla `Button`, `Input`, `Textarea`, `Select`, `Checkbox`, `Radio`, date picker, `Badge`, `Card`, `Table`, modal, drawer, dropdown, tabs, breadcrumb, tooltip, empty state, skeleton, alert, toast, pagination, search, filters, sidebar y topbar.
 
-Phase 2.1 agrega la marca oficial al header, fotografía editorial coherente en heroes y contenido, además de derivados Apple/Android. Se evita una dependencia de primitivas adicional mientras los controles nativos cubran correctamente semántica y teclado.
+Phase 2.2 integra la marca oficial y una utility bar navy en el header. Los heroes fotográficos ya no se presentan como tarjetas laterales: usan imagen de fondo, overlay navy multidireccional y contenido superpuesto con contraste alto. En móvil el overlay se refuerza y el punto focal se desplaza para proteger la lectura. Se evita una dependencia de primitivas adicional mientras los controles nativos cubran correctamente semántica y teclado.
 
 ## Estados obligatorios
 

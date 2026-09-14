@@ -52,6 +52,9 @@ test("all required public routes render with shared navigation and footer", asyn
     await expect(
       page.getByRole("link", { name: /Karla Norin Vásquez, inicio/i }).first(),
     ).toBeVisible();
+    await expect(
+      page.locator('[aria-label^="Hora actual en Honduras"]'),
+    ).toContainText(/Honduras\s*·\s*\d{1,2}:\d{2}/);
     await expect(page.getByRole("contentinfo")).toContainText(
       "Contenido informativo general",
     );
@@ -61,6 +64,37 @@ test("all required public routes render with shared navigation and footer", asyn
   }
 
   expect(runtimeErrors, "browser console and page errors").toEqual([]);
+});
+
+test("editorial images are integrated into the primary public heroes", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator(".home-hero-background img")).toBeVisible();
+  await expect(page.locator(".home-hero-media")).toHaveCount(0);
+
+  const imageHeroRoutes = [
+    "/sobre-karla",
+    "/areas-de-practica",
+    "/areas-de-practica/derecho-de-familia",
+    "/servicios/divorcio",
+    "/solicitar-consulta",
+    "/recursos",
+    "/contacto",
+  ];
+
+  for (const route of imageHeroRoutes) {
+    await page.goto(route);
+    await expect(page.locator(".page-hero--image")).toBeVisible();
+    await expect(page.locator(".page-hero-background img")).toBeVisible();
+    await expect(page.locator(".page-hero-media")).toHaveCount(0);
+  }
+
+  await page.goto("/sobre-karla");
+  await expect(page.locator(".page-hero-background img")).toHaveAttribute(
+    "src",
+    /about-professional-approach/,
+  );
 });
 
 test("every public route avoids horizontal overflow at all required breakpoints", async ({
@@ -90,6 +124,7 @@ test("mobile navigation is keyboard-accessible and closes after navigation", asy
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await expect(page.locator(".header-cta")).toBeHidden();
   const menu = page.getByRole("button", { name: "Abrir menú" });
   await menu.focus();
   await page.keyboard.press("Enter");
@@ -189,7 +224,7 @@ test("official brand, social and platform assets are public", async ({
 
   await page.goto("/");
   await expect(page.locator(".public-brand-mark img").first()).toBeVisible();
-  await expect(page.locator(".home-hero-media img")).toBeVisible();
+  await expect(page.locator(".home-hero-background img")).toBeVisible();
   for (const image of await page.locator("main img").all()) {
     await image.scrollIntoViewIfNeeded();
     await expect

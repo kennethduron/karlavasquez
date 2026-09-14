@@ -6,10 +6,10 @@
 - Proyecto exacto: `bufetekarlavasquez`
 - Framework: Next.js
 - Root Directory: `./`
-- Rama: `feat/knv-public-site-polish-phase-2-1`
+- Rama: `feat/knv-public-site-polish-phase-2-2`
 - Alias: `https://bufetekarlavasquez.vercel.app`
 
-El nombre debe comprobarse antes de crear o enlazar el proyecto. No se aceptará una variante automática. El deployment debe corresponder al SHA final ya validado y publicado de Phase 2.1; `main` no se modifica para desplegar.
+El nombre debe comprobarse antes de crear o enlazar el proyecto. No se aceptará una variante automática. El deployment debe corresponder al SHA final ya validado y publicado de Phase 2.2; `main` no se modifica para desplegar.
 
 ## Estado actual
 
@@ -20,7 +20,7 @@ El nombre debe comprobarse antes de crear o enlazar el proyecto. No se aceptará
 - Dominio personalizado y DNS: no conectados
 - Integración Git / Production Branch: no configurada deliberadamente
 
-Los despliegues se controlan mediante Vercel CLI después de comprobar que `HEAD` coincide con `origin/feat/knv-public-site-polish-phase-2-1` y que GitHub Actions terminó correctamente. Esta estrategia evita desplegar `main` o una fase histórica mientras no exista una política de ramas aprobada. No se usa `--force` ni se hace merge para asignar el alias.
+Los despliegues se controlan mediante Vercel CLI después de comprobar que `HEAD` coincide con `origin/feat/knv-public-site-polish-phase-2-2` y que GitHub Actions terminó correctamente. Esta estrategia evita desplegar `main` o una fase histórica mientras no exista una política de ramas aprobada. No se usa `--force` ni se hace merge para asignar el alias.
 
 ## Variables
 
