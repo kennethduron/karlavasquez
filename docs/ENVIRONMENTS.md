@@ -17,7 +17,8 @@ Estado real de DEV:
 - Firestore Standard `freeTier: true`: creado en `nam5`, PITR deshabilitado y delete protection habilitada;
 - `firestore.rules` e índices: desplegados;
 - credenciales Admin locales: configuradas en `.env.local` ignorado por Git; secretos Vercel: pendientes;
-- dominios, plantillas/action handler, roles/permisos iniciales, primera administradora y proveedor de invitaciones: pendientes.
+- roles/permisos iniciales: 4 roles y 32 permisos configurados y verificados;
+- dominios, plantillas/action handler, primera administradora y proveedor de invitaciones: pendientes.
 
 La validación real confirmó login Email/Password, intercambio de ID token, cookie HttpOnly, acceso server-side a `/panel`, logout, revocación y eliminación de fixtures. También pasaron 19 denegaciones anonymous/orphan y 17 límites autorizados/denegados para Recepción, Asistente, Abogado y Administradora. Cuentas, perfiles, roles, expedientes, documentos metadata y auditoría temporales se eliminan dentro de cada test.
 

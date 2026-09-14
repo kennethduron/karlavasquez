@@ -19,6 +19,7 @@
     "test:firebase:real": "node --env-file=.env.local scripts/firebase-real-smoke.mjs",
     "test:firebase:real:roles": "node --env-file=.env.local scripts/firebase-real-roles-smoke.mjs",
     "test:firebase:real:session": "node --env-file=.env.local scripts/firebase-real-session-smoke.mjs",
+    "firebase:seed:authorization": "node --experimental-strip-types --env-file=.env.local scripts/seed-firebase-authorization.mjs",
     "firebase:emulators": "firebase emulators:start --project knv-local --only auth,firestore",
     "test:rules:unit": "vitest run --config vitest.rules.config.ts",
     "test:rules": "firebase emulators:exec --project knv-local --only auth,firestore \"npm run test:rules:unit\"",

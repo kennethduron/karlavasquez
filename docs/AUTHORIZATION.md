@@ -21,7 +21,9 @@ La UI solo representa capacidades; no es una barrera.
 | Asistente      | Operación autorizada, sin gobierno                                     |
 | Recepción      | Intake y funciones expresamente permitidas, sin expedientes/documentos |
 
-El código operativo pregunta por permisos (`cases.view`, `documents.read`, `roles.manage`, etc.), no solo `role === admin`.
+El código operativo pregunta por permisos (`cases.view`, `documents.view`, `roles.manage`, etc.), no solo `role === admin`.
+
+En DEV real, `firebase:seed:authorization` materializa idempotentemente las cuatro definiciones versionadas y el catálogo de 32 permisos mediante Admin SDK. El script falla si apunta a un proyecto distinto de `knv-development`.
 
 ## Expedientes y documentos
 
@@ -42,4 +44,4 @@ Las suites de emulador cubren:
 - cambio malicioso de `caseId`, `clientId`, responsable, asignaciones, roles, permisos e IDs humanos;
 - lectura directa por SDK de expediente ajeno;
 - update/delete de auditoría;
-- uploads, reads y deletes no autorizados, MIME/tamaño y rutas seguras.
+- metadata de documentos limitada por expediente; creación, update y delete directos denegados mientras el almacenamiento binario permanezca diferido.
