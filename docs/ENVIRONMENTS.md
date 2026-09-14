@@ -30,4 +30,6 @@ No se crea ni vincula cuenta de facturación. Storage, Cloud Functions, Identity
 
 Vercel es el único hosting. Phase 2 autoriza un despliegue controlado al proyecto exacto `bufetekarlavasquez` y alias `bufetekarlavasquez.vercel.app`, siempre desde el SHA final de `feat/knv-public-site-phase-2`. Si el nombre no está disponible, no se crea una variante. Dominio futuro: `bufetekarlavasquez.com`; no se conecta ni se modifica DNS.
 
+El runtime se fija en Node.js `22.x`, igual que CI y desarrollo. El rango abierto hacia nuevos majors no se usa: Node 24 demostró una incompatibilidad de carga ESM/CommonJS en una dependencia transitoria de Firebase Admin durante el smoke de sesión.
+
 Las variables públicas y server-only se configuran por entorno en Vercel. Nunca se copian claves Admin a variables `NEXT_PUBLIC_*`. La URL canónica permanece en el dominio final; la navegación y QA usan temporalmente el alias `.vercel.app`.
