@@ -19,6 +19,8 @@ La configuración web `NEXT_PUBLIC_FIREBASE_*` es pública por diseño; Security
 
 No existe `allow read, write: if request.auth != null`. Las reglas fallan cerrado por colección, permiso y asignación. Campos privilegiados e identificadores relacionales son inmutables o requieren permiso específico. Contadores, idempotencia y auditoría solo se escriben en servidor.
 
+Además del Emulator, DEV real ejecuta smoke tests con fixtures aislados: identidad anónima y huérfana, Recepción limitada, Asistente asignada, Abogado asignado/no asignado y Administradora. Se comprueban escalación de roles/permisos, mutación de asignaciones/clientId, acceso horizontal y auditoría append-only; toda fixture se elimina con Admin al finalizar.
+
 ## Documentos binarios
 
 `BINARY_DOCUMENT_STORAGE = DEFERRED_BY_FREE_TIER_POLICY`. No existe bucket, endpoint binario ni adaptador activo. Firestore solo conserva metadata y nunca bytes. La futura activación requerirá revisión separada de proveedor, acceso privado, validación de firma, nombres seguros, cuarentena, antivirus y retención.

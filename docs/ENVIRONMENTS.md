@@ -19,7 +19,7 @@ Estado real de DEV:
 - credenciales Admin locales: configuradas en `.env.local` ignorado por Git; secretos Vercel: pendientes;
 - dominios, plantillas/action handler, roles/permisos iniciales, primera administradora y proveedor de invitaciones: pendientes.
 
-La validación real confirmó login Email/Password, intercambio de ID token, cookie HttpOnly, acceso server-side a `/panel`, logout, revocación y eliminación de fixtures. La cuenta temporal, su perfil, rol y auditoría se eliminan dentro del mismo test.
+La validación real confirmó login Email/Password, intercambio de ID token, cookie HttpOnly, acceso server-side a `/panel`, logout, revocación y eliminación de fixtures. También pasaron 19 denegaciones anonymous/orphan y 17 límites autorizados/denegados para Recepción, Asistente, Abogado y Administradora. Cuentas, perfiles, roles, expedientes, documentos metadata y auditoría temporales se eliminan dentro de cada test.
 
 Staging y producción no se crean en esta fase. Cuando se autoricen deberán ser proyectos separados; nunca se reutiliza DEV ni infraestructura de otros clientes.
 

@@ -37,6 +37,7 @@ npm run test:rules
 npm run test:e2e
 npm run test:e2e:firebase
 npm run test:firebase:real # manual; requiere .env.local y usa solo DEV
+npm run test:firebase:real:roles # manual; límites reales de las cuatro personas
 npm run test:firebase:real:session # manual; requiere Firebase Admin local
 npm run security:check
 npm run build
