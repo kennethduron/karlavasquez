@@ -21,6 +21,18 @@ if (packageJson.includes('"@supabase/')) {
   failures.push("Supabase remains an active runtime dependency.");
 }
 
+for (const forbiddenPublicSecret of [
+  "NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY",
+  "NEXT_PUBLIC_CLOUDINARY_API_SECRET",
+  "NEXT_PUBLIC_B2_APPLICATION_KEY",
+  "NEXT_PUBLIC_RESEND_API_KEY",
+  "NEXT_PUBLIC_FIREBASE_PRIVATE_KEY",
+]) {
+  if (packageJson.includes(forbiddenPublicSecret)) {
+    failures.push(`Forbidden public secret name: ${forbiddenPublicSecret}`);
+  }
+}
+
 if (existsSync(join(root, "firebase-functions")))
   failures.push("Cloud Functions must not be configured on the Spark plan.");
 
@@ -36,8 +48,12 @@ for (const file of sourceFiles) {
     failures.push(`Raw HTML in ${displayPath}`);
   if (/from ["']@supabase\//.test(source))
     failures.push(`Supabase runtime import in ${displayPath}`);
-  if (source.includes("NEXT_PUBLIC_FIREBASE_PRIVATE_KEY")) {
-    failures.push(`Public Firebase private key variable in ${displayPath}`);
+  if (
+    /NEXT_PUBLIC_(?:FIREBASE_PRIVATE_KEY|SUPABASE_SERVICE_ROLE_KEY|CLOUDINARY_API_SECRET|B2_APPLICATION_KEY|RESEND_API_KEY)/.test(
+      source,
+    )
+  ) {
+    failures.push(`Public secret variable in ${displayPath}`);
   }
 }
 

@@ -2,6 +2,13 @@ import { expect, test } from "@playwright/test";
 
 const responsiveWidths = [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920];
 
+test("the conventional login alias redirects to the active Spanish route", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await expect(page).toHaveURL(/\/iniciar-sesion$/);
+});
+
 test("unauthenticated requests are redirected away from the private panel", async ({
   page,
 }) => {

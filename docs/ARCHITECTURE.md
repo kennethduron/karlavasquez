@@ -2,16 +2,26 @@
 
 ## Decisión vigente
 
-| Responsabilidad           | Tecnología actual               | Objetivo futuro                |
-| ------------------------- | ------------------------------- | ------------------------------ |
-| Aplicación web y hosting  | Next.js en Vercel               | Vercel                         |
-| Autenticación             | Firebase Authentication         | Por evaluar en migración       |
-| Datos                     | Cloud Firestore                 | Supabase/PostgreSQL            |
-| Metadata de documentos    | Cloud Firestore                 | Supabase/PostgreSQL            |
-| Binarios jurídicos        | Diferidos por política Spark    | Storage privado compatible     |
-| Operaciones privilegiadas | Firebase Admin SDK, server-only | Adaptador Supabase server-only |
+| Responsabilidad           | Tecnología actual               | Objetivo futuro          |
+| ------------------------- | ------------------------------- | ------------------------ |
+| Aplicación web y hosting  | Next.js en Vercel               | Vercel                   |
+| Autenticación             | Firebase Authentication         | Supabase Auth            |
+| Datos                     | Cloud Firestore                 | Supabase/PostgreSQL      |
+| Metadata de documentos    | Cloud Firestore                 | Supabase/PostgreSQL      |
+| Binarios jurídicos        | Diferidos por política Spark    | Supabase Storage privado |
+| Media pública             | Assets estáticos                | Cloudinary               |
+| Notificaciones push       | No activas                      | Firebase Cloud Messaging |
+| Email transaccional       | Diferido                        | Resend                   |
+| Backups externos          | Diferidos                       | Backblaze B2 privado     |
+| Operaciones privilegiadas | Firebase Admin SDK, server-only | Adaptadores server-only  |
 
 `CURRENT_BACKEND = Firebase Spark`. `BILLING = DISABLED`. `FUTURE_BACKEND = Supabase/PostgreSQL`. Las migraciones de Phase 0 se conservan como referencia histórica y no participan del runtime actual. Firebase Storage y Cloud Functions no se usan.
+
+Phase 2.4A prepara contratos y configuración, pero no activa ningún proveedor
+nuevo en el runtime. Los puertos de Auth, base de datos, documentos privados,
+media pública, push, email y backups están centralizados en
+`src/domain/integration-ports.ts`. Véase
+`docs/INFRASTRUCTURE_PHASE_2_4A.md` para el inventario y los límites de fase.
 
 ## Capas obligatorias
 

@@ -8,26 +8,16 @@ import {
   setPersistence,
 } from "firebase/auth";
 
+import { getFirebaseClientEnvironment } from "@/lib/env/client";
+
 declare global {
   var __knvFirebaseAuthEmulatorConnected: boolean | undefined;
 }
 
-function getClientConfig() {
-  const config = {
-    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  };
-  if (Object.values(config).some((value) => !value)) {
-    throw new Error("Firebase client configuration is missing.");
-  }
-  return config as Record<keyof typeof config, string>;
-}
-
 export function getFirebaseClientApp(): FirebaseApp {
-  return getApps().length ? getApp() : initializeApp(getClientConfig());
+  return getApps().length
+    ? getApp()
+    : initializeApp(getFirebaseClientEnvironment());
 }
 
 export async function getFirebaseClientAuth() {

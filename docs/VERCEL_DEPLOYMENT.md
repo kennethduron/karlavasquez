@@ -2,11 +2,11 @@
 
 ## Objetivo autorizado
 
-- Team/account: `Ken Code`
+- Team/account: `Bufete_Karla_Vasquez`
 - Proyecto exacto: `bufetekarlavasquez`
 - Framework: Next.js
 - Root Directory: `./`
-- Rama: `feat/knv-final-brand-photo-phase-2-3`
+- Rama temporal de producción: `feat/knv-infrastructure-setup-phase-2-4a`
 - Alias: `https://bufetekarlavasquez.vercel.app`
 
 El nombre debe comprobarse antes de crear o enlazar el proyecto. No se aceptará una variante automática. El deployment debe corresponder al SHA final ya validado y publicado de Phase 2.3; `main` no se modifica para desplegar.
@@ -18,9 +18,14 @@ El nombre debe comprobarse antes de crear o enlazar el proyecto. No se aceptará
 - Runtime: Node.js `22.x`
 - Alias exacto: activo
 - Dominio personalizado y DNS: no conectados
-- Integración Git / Production Branch: no configurada deliberadamente
+- Repositorio Git: `kennethduron/karlavasquez`
+- Production Branch: `feat/knv-infrastructure-setup-phase-2-4a`
 
-Los despliegues se controlan mediante Vercel CLI después de comprobar que `HEAD` coincide con `origin/feat/knv-final-brand-photo-phase-2-3` y que GitHub Actions terminó correctamente. Esta estrategia evita desplegar `main` o una fase histórica mientras no exista una política de ramas aprobada. No se usa `--force` ni se hace merge para asignar el alias.
+El proyecto fue transferido al equipo dedicado sin perder el deployment de
+Phase 2.3 ni el alias. La rama histórica
+`feat/knv-foundation-phase-0` fue retirada de Branch Tracking. `main` sigue
+siendo histórico y no se usa como Production Branch hasta una aprobación
+posterior.
 
 ## Variables
 
