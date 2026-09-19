@@ -172,7 +172,7 @@ test("every public route avoids horizontal overflow at all required breakpoints"
   for (const width of responsiveWidths) {
     await page.setViewportSize({ width, height: width < 600 ? 780 : 960 });
     for (const [route] of routes) {
-      await page.goto(route);
+      await page.goto(route, { waitUntil: "domcontentloaded" });
       const overflow = await page.evaluate(
         () =>
           document.documentElement.scrollWidth -
