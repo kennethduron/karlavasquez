@@ -218,8 +218,15 @@ test("consultation form validates three steps without claiming receipt", async (
   await page.goto("/solicitar-consulta");
   await page.getByRole("button", { name: /Continuar/ }).click();
   await expect(page.getByRole("alert").first()).toBeVisible();
-  await page.getByLabel("Nombre completo").fill("Persona de Prueba");
-  await page.getByLabel("Correo electrónico").fill("persona@example.com");
+  const fullName = page.getByLabel("Nombre completo");
+  const email = page.getByLabel("Correo electrónico");
+  const phone = page.locator('input[name="phone"]');
+  await fullName.fill("Persona de Prueba");
+  await email.fill("persona@example.com");
+  await phone.fill("+504 9999-9999");
+  await expect(fullName).toHaveValue("Persona de Prueba");
+  await expect(email).toHaveValue("persona@example.com");
+  await expect(phone).toHaveValue("+504 9999-9999");
   await page.getByRole("button", { name: /Continuar/ }).click();
   await expect(page.locator(".stepper")).toHaveAttribute(
     "aria-label",
