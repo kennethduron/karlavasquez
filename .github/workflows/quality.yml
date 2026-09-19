@@ -10,6 +10,7 @@ on:
       - feat/knv-public-site-phase-2
       - feat/knv-public-site-polish-phase-2-1
       - feat/knv-public-site-polish-phase-2-2
+      - feat/knv-final-brand-photo-phase-2-3
 
 concurrency:
   group: quality-${{ github.ref }}

@@ -1,4 +1,4 @@
-# Assets de imagen — KNV Phase 2.2
+# Assets de imagen — KNV Phase 2.3
 
 ## Fuentes oficiales
 
@@ -10,6 +10,14 @@
 `scripts/generate-brand-assets.mjs` recorta únicamente margen blanco, conserva proporciones y añade padding blanco seguro. Genera favicon 16/32/ICO, Apple 180, Android 192/512, navbar WebP 128 y OG 1200×630. El OG usa `contain` y padding, nunca estiramiento.
 
 Mientras el dominio personalizado no esté conectado, `og:image` y `twitter:image` usan el alias público estable `bufetekarlavasquez.vercel.app`; el canonical permanece en `bufetekarlavasquez.com`. Al conectar el dominio se podrá cambiar solo el origen de la imagen social.
+
+## Fotografía real autorizada de Karla
+
+`assets/karlavasquez.jpeg` es la fotografía oficial proporcionada por el propietario para Phase 2.3. Era el único archivo nuevo sin seguimiento en el worktree inicial; se preserva intacto como fuente. La inspección del archivo real determinó JPEG sRGB de **494×494 px y 48.371 bytes**. Aunque el encargo lo describía como vertical, el archivo recibido es cuadrado. Su resolución limita el tamaño útil en pantallas de alta densidad; no se amplió artificialmente ni se reconstruyó con IA.
+
+El derivado `public/images/knv/karla-norin-vasquez.webp` es un recorte editorial tradicional de **410×494 px y 26.548 bytes** (WebP). Se retiraron 84 px del borde derecho para excluir una placa parcialmente visible en el extremo inferior, sin modificar rostro, ropa, cuerpo ni contexto. No se detectó texto legible en los papeles o en el dispositivo dentro del recorte. No hubo retoque generativo ni blur facial. La imagen se sirve con `next/image`, dimensiones explícitas, `sizes` adaptativo y alt factual: «Karla Norin Vásquez, abogada».
+
+Home y Sobre Karla muestran este retrato real como visual humano principal. En anchos menores de 1152 px aparece debajo del copy y CTA; desde 1152 px ocupa la columna derecha en un marco institucional discreto. Se evita un segundo derivado móvil porque el mismo recorte mantiene cabeza y manos visibles en todas las composiciones. El original ya sitúa el cabello junto al borde superior, por lo que ningún recorte adicional se aplica arriba.
 
 ## Imágenes editoriales generadas
 
@@ -45,4 +53,4 @@ Cada prompt combinó el lenguaje compartido anterior con el concepto específico
 
 Los ocho mockups KNV solicitados (Inicio, Sobre Karla, Áreas, Familia, Divorcio, Consulta, Recursos y Contacto) no estaban presentes en el workspace ni en el adjunto de Phase 2.1. Se encontraron seis imágenes de una empresa ajena en un adjunto histórico; no se utilizaron para marca, fotografía o contenido KNV.
 
-Phase 2.2 reutiliza los diez WebP aprobados sin regenerarlos. `assets/favicon.jpg` y `assets/opengraph.jpg` continúan siendo las fuentes oficiales y sus derivados no cambiaron.
+Phase 2.3 reutiliza los diez WebP editoriales aprobados sin regenerarlos. `home-hero-legal.webp` sigue como fondo de Home, pero con un gradiente localizado más ligero hacia la derecha; `about-professional-approach.webp` queda como fondo ambiental detrás del retrato real en Sobre Karla. `assets/favicon.jpg` y `assets/opengraph.jpg` continúan siendo las fuentes oficiales y sus derivados no cambiaron.

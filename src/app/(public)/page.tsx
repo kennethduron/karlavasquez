@@ -15,6 +15,7 @@ import {
   EditorialImage,
   SectionHeading,
 } from "@/components/public/sections";
+import { KarlaPortrait } from "@/components/public/karla-portrait";
 import { practiceAreas } from "@/content/practice-areas";
 import { siteConfig } from "@/content/site";
 import { createPageMetadata } from "@/lib/seo";
@@ -94,6 +95,7 @@ export default function HomePage() {
               “{siteConfig.slogan}”
             </blockquote>
           </div>
+          <KarlaPortrait className="home-hero-portrait" />
         </div>
       </section>
 

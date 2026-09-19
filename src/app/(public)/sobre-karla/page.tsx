@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+import { KarlaPortrait } from "@/components/public/karla-portrait";
 import {
   Breadcrumbs,
   CtaBand,
@@ -48,6 +49,7 @@ export default function AboutPage() {
           alt: "",
           position: "center",
         }}
+        aside={<KarlaPortrait className="about-hero-portrait" />}
       >
         <Link className="button button--gold" href="/solicitar-consulta">
           Solicitar consulta <ArrowRight size={18} aria-hidden="true" />

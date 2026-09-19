@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { devices, expect, test } from "@playwright/test";
 
 const routes = [
   ["/", /Asesoría Legal con/],
@@ -16,7 +16,9 @@ const routes = [
   ["/aviso-legal", "Aviso Legal"],
 ] as const;
 
-const responsiveWidths = [320, 360, 375, 390, 430, 768, 1024, 1280, 1440, 1920];
+const responsiveWidths = [
+  320, 360, 375, 390, 430, 768, 820, 1024, 1280, 1440, 1920, 2048,
+];
 
 const imagePaths = [
   "/images/knv/home-hero-legal.webp",
@@ -29,6 +31,7 @@ const imagePaths = [
   "/images/knv/legal-office-contact.webp",
   "/images/knv/notarial-civil-services.webp",
   "/images/knv/commercial-law.webp",
+  "/images/knv/karla-norin-vasquez.webp",
 ] as const;
 
 test("all required public routes render with shared navigation and footer", async ({
@@ -64,6 +67,90 @@ test("all required public routes render with shared navigation and footer", asyn
   }
 
   expect(runtimeErrors, "browser console and page errors").toEqual([]);
+});
+
+test("official Karla portrait is visible and correctly ordered in both heroes", async ({
+  page,
+}) => {
+  for (const width of [390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const [route, copySelector] of [
+      ["/", ".home-hero-copy"],
+      ["/sobre-karla", ".page-hero-content"],
+    ] as const) {
+      await page.goto(route);
+      const portrait = page.getByRole("img", {
+        name: "Karla Norin Vásquez, abogada",
+      });
+      await expect(portrait).toBeVisible();
+      await expect(portrait).toHaveAttribute("src", /karla-norin-vasquez/);
+      await expect
+        .poll(() =>
+          portrait.evaluate((image: HTMLImageElement) => image.naturalWidth),
+        )
+        .toBeGreaterThan(0);
+
+      const copy = await page.locator(copySelector).boundingBox();
+      const photo = await portrait.boundingBox();
+      expect(copy).not.toBeNull();
+      expect(photo).not.toBeNull();
+      if (width < 1152) {
+        expect(
+          photo!.y,
+          `${route} portrait below content at ${width}px`,
+        ).toBeGreaterThan(copy!.y + copy!.height - 2);
+      } else {
+        expect(
+          photo!.x,
+          `${route} portrait right of content at ${width}px`,
+        ).toBeGreaterThan(copy!.x + copy!.width - 2);
+      }
+    }
+  }
+});
+
+test("portrait remains usable on additional Apple and Android device profiles", async ({
+  browser,
+}, testInfo) => {
+  const profiles =
+    testInfo.project.name === "iphone-webkit"
+      ? ["iPhone SE (3rd gen)", "iPhone 15", "iPhone 15 Pro Max"]
+      : testInfo.project.name === "android-chromium"
+        ? ["Galaxy S24", "Galaxy Tab S9"]
+        : [];
+  test.skip(
+    profiles.length === 0,
+    "Additional profiles run on matching engines",
+  );
+  test.setTimeout(120_000);
+
+  const baseUrl = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000";
+  for (const profile of profiles) {
+    const context = await browser.newContext({ ...devices[profile] });
+    try {
+      const devicePage = await context.newPage();
+      for (const route of ["/", "/sobre-karla"]) {
+        await devicePage.goto(`${baseUrl}${route}`);
+        const portrait = devicePage.getByRole("img", {
+          name: "Karla Norin Vásquez, abogada",
+        });
+        await expect(portrait, `${profile} ${route}`).toBeVisible();
+        await expect
+          .poll(() =>
+            portrait.evaluate((image: HTMLImageElement) => image.naturalWidth),
+          )
+          .toBeGreaterThan(0);
+        const overflow = await devicePage.evaluate(
+          () =>
+            document.documentElement.scrollWidth -
+            document.documentElement.clientWidth,
+        );
+        expect(overflow, `${profile} ${route} overflow`).toBeLessThanOrEqual(1);
+      }
+    } finally {
+      await context.close();
+    }
+  }
 });
 
 test("editorial images are integrated into the primary public heroes", async ({

@@ -1319,12 +1319,12 @@ h1 {
   background:
     linear-gradient(
       90deg,
-      rgb(3 27 54 / 0.97) 0%,
-      rgb(3 27 54 / 0.9) 40%,
-      rgb(3 27 54 / 0.64) 70%,
-      rgb(3 27 54 / 0.42) 100%
+      rgb(3 27 54 / 0.9) 0%,
+      rgb(3 27 54 / 0.77) 38%,
+      rgb(3 27 54 / 0.38) 72%,
+      rgb(3 27 54 / 0.16) 100%
     ),
-    linear-gradient(0deg, rgb(3 27 54 / 0.72), transparent 52%);
+    linear-gradient(0deg, rgb(3 27 54 / 0.48), transparent 52%);
   content: "";
 }
 
@@ -1348,7 +1348,7 @@ h1 {
 .home-hero-background img {
   object-fit: cover;
   object-position: center 54%;
-  filter: saturate(0.82) contrast(1.04);
+  filter: saturate(0.9) contrast(1.02) brightness(1.04);
 }
 
 .home-hero-grid {
@@ -1363,6 +1363,38 @@ h1 {
 
 .home-hero-copy {
   max-width: 48rem;
+}
+
+.karla-portrait {
+  position: relative;
+  width: min(100%, 25rem);
+  margin: 0;
+  padding: 0.4rem;
+  border: 1px solid rgb(218 178 101 / 0.82);
+  border-radius: 0.9rem;
+  background: rgb(245 239 226 / 0.9);
+  box-shadow: 0 24px 64px rgb(2 19 39 / 0.3);
+}
+
+.karla-portrait::after {
+  position: absolute;
+  inset: 0.4rem;
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: 0.52rem;
+  content: "";
+  pointer-events: none;
+}
+
+.karla-portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.52rem;
+}
+
+.home-hero-portrait,
+.about-hero-portrait {
+  justify-self: center;
 }
 
 .home-hero h1,
@@ -1772,6 +1804,10 @@ h1 {
 }
 
 .page-hero--image .page-hero-grid {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.page-hero--portrait .page-hero-grid {
   grid-template-columns: minmax(0, 1fr);
 }
 
@@ -2599,6 +2635,22 @@ h1 {
       linear-gradient(0deg, rgb(3 27 54 / 0.9), rgb(3 27 54 / 0.3) 72%);
   }
 
+  .home-hero::before {
+    background:
+      linear-gradient(90deg, rgb(3 27 54 / 0.84), rgb(3 27 54 / 0.68)),
+      linear-gradient(0deg, rgb(3 27 54 / 0.75), transparent 72%);
+  }
+
+  .home-hero-grid,
+  .page-hero--portrait {
+    padding-block: 3.5rem;
+  }
+
+  .home-hero-portrait,
+  .about-hero-portrait {
+    width: min(100%, 22rem);
+  }
+
   .home-hero-background img,
   .page-hero-background img {
     object-position: 62% center !important;
@@ -2803,6 +2855,24 @@ h1 {
 
   .contact-layout {
     grid-template-columns: minmax(18rem, 0.75fr) minmax(0, 1.25fr);
+  }
+}
+
+@media (min-width: 72rem) {
+  .home-hero-grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 0.8fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    padding-block: clamp(4rem, 6vw, 5.5rem);
+  }
+
+  .home-hero-portrait,
+  .about-hero-portrait {
+    justify-self: end;
+  }
+
+  .page-hero--portrait .page-hero-grid {
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr);
+    gap: clamp(2rem, 5vw, 5rem);
   }
 }
 

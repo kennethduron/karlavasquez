@@ -62,7 +62,7 @@ No se diseña una pantalla de 1920 px para reducirla después. Cada componente d
 
 La arquitectura contempla `Button`, `Input`, `Textarea`, `Select`, `Checkbox`, `Radio`, date picker, `Badge`, `Card`, `Table`, modal, drawer, dropdown, tabs, breadcrumb, tooltip, empty state, skeleton, alert, toast, pagination, search, filters, sidebar y topbar.
 
-Phase 2.2 integra la marca oficial y una utility bar navy en el header. Los heroes fotográficos ya no se presentan como tarjetas laterales: usan imagen de fondo, overlay navy multidireccional y contenido superpuesto con contraste alto. En móvil el overlay se refuerza y el punto focal se desplaza para proteger la lectura. Se evita una dependencia de primitivas adicional mientras los controles nativos cubran correctamente semántica y teclado.
+Phase 2.3 mantiene la marca oficial y la utility bar navy. Los heroes conservan fondos editoriales integrados; en Home el overlay navy se concentra bajo el texto y se aclara hacia la derecha para revelar el escritorio y el ambiente. En móvil el overlay protege la lectura. El retrato real de Karla utiliza un marco crema de borde dorado fino y sombra tenue: columna derecha desde 1152 px, después del texto y CTA por debajo de ese ancho. No se presenta como avatar ni tarjeta blanca genérica. Se evita una dependencia de primitivas adicional mientras los controles nativos cubran correctamente semántica y teclado.
 
 ## Estados obligatorios
 
@@ -80,4 +80,4 @@ Cada feature debe especificar: loading/skeleton, empty, error recuperable, succe
 
 ## Assets
 
-El isotipo oficial proviene de `assets/favicon.jpg` y sustituye el icono genérico del navbar. Se usa con fondo blanco, borde dorado y tamaños visuales de 44 px en móvil y 52 px en desktop, sin alterar su arte. `assets/opengraph.jpg` es el diseño social oficial. Los recursos editoriales mantienen la paleta navy, cream, gold y madera oscura; son ilustrativos y nunca se presentan como retratos u oficinas reales. Consulte `docs/IMAGE_ASSETS.md`.
+El isotipo oficial proviene de `assets/favicon.jpg` y sustituye el icono genérico del navbar. Se usa con fondo blanco, borde dorado y tamaños visuales de 44 px en móvil y 52 px en desktop, sin alterar su arte. `assets/opengraph.jpg` es el diseño social oficial. Los recursos editoriales mantienen la paleta navy, cream, gold y madera oscura; son ilustrativos y nunca se presentan como retratos u oficinas reales. Solo `assets/karlavasquez.jpeg` y su derivado WebP representan a Karla. Consulte `docs/IMAGE_ASSETS.md`.

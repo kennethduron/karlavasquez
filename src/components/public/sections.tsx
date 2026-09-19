@@ -28,18 +28,22 @@ export function PageHero({
   title,
   copy,
   image,
+  aside,
   children,
 }: {
   eyebrow: string;
   title: string;
   copy: string;
   image?: { src: string; alt: string; position?: string };
+  aside?: ReactNode;
   children?: ReactNode;
 }) {
   const hasImage = Boolean(image);
 
   return (
-    <section className={`page-hero${hasImage ? " page-hero--image" : ""}`}>
+    <section
+      className={`page-hero${hasImage ? " page-hero--image" : ""}${aside ? " page-hero--portrait" : ""}`}
+    >
       {image ? (
         <div className="page-hero-background" aria-hidden="true">
           <Image
@@ -60,6 +64,7 @@ export function PageHero({
           <p className="page-hero-copy">{copy}</p>
           {children}
         </div>
+        {aside}
         {!image ? (
           <div className="justice-motif" aria-hidden="true">
             <span className="justice-orbit justice-orbit--one" />
