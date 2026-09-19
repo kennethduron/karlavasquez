@@ -25,7 +25,7 @@ const practiceVisuals: Record<
     alt: "Documentación civil organizada con pluma y carpeta profesional",
   },
   "derecho-penal": {
-    src: "/images/knv/practice-areas-legal.webp",
+    src: "/images/knv/legal-resources.webp",
     alt: "Libros y documentos para análisis jurídico profesional",
   },
   "derecho-mercantil": {

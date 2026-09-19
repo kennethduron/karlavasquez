@@ -16,10 +16,51 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   projects: [
-    { name: "chromium", use: { ...devices["Desktop Chrome"] } },
-    { name: "android-chromium", use: { ...devices["Pixel 7"] } },
-    { name: "iphone-webkit", use: { ...devices["iPhone 13"] } },
-    { name: "ipad-webkit", use: { ...devices["iPad Pro 11"] } },
+    {
+      name: "chromium",
+      grepInvert: /@device-profile/,
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "android-chromium",
+      grepInvert: /@device-profile/,
+      use: { ...devices["Pixel 7"] },
+    },
+    {
+      name: "iphone-webkit",
+      grepInvert: /@device-profile/,
+      use: { ...devices["iPhone 13"] },
+    },
+    {
+      name: "ipad-webkit",
+      grepInvert: /@device-profile/,
+      use: { ...devices["iPad Pro 11"] },
+    },
+    {
+      name: "iphone-se-webkit",
+      grep: /@device-profile/,
+      use: { ...devices["iPhone SE (3rd gen)"] },
+    },
+    {
+      name: "iphone-15-webkit",
+      grep: /@device-profile/,
+      use: { ...devices["iPhone 15"] },
+    },
+    {
+      name: "iphone-pro-max-webkit",
+      grep: /@device-profile/,
+      use: { ...devices["iPhone 15 Pro Max"] },
+    },
+    {
+      name: "galaxy-chromium",
+      grep: /@device-profile/,
+      use: { ...devices["Galaxy S24"] },
+    },
+    {
+      name: "android-tablet-chromium",
+      grep: /@device-profile/,
+      use: { ...devices["Galaxy Tab S9"] },
+    },
   ],
   webServer: remoteBaseUrl
     ? undefined

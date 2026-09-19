@@ -1,4 +1,4 @@
-import { devices, expect, test } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 const routes = [
   ["/", /Asesoría Legal con/],
@@ -109,47 +109,26 @@ test("official Karla portrait is visible and correctly ordered in both heroes", 
   }
 });
 
-test("portrait remains usable on additional Apple and Android device profiles", async ({
-  browser,
-}, testInfo) => {
-  const profiles =
-    testInfo.project.name === "iphone-webkit"
-      ? ["iPhone SE (3rd gen)", "iPhone 15", "iPhone 15 Pro Max"]
-      : testInfo.project.name === "android-chromium"
-        ? ["Galaxy S24", "Galaxy Tab S9"]
-        : [];
-  test.skip(
-    profiles.length === 0,
-    "Additional profiles run on matching engines",
-  );
-  test.setTimeout(120_000);
-
-  const baseUrl = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3000";
-  for (const profile of profiles) {
-    const context = await browser.newContext({ ...devices[profile] });
-    try {
-      const devicePage = await context.newPage();
-      for (const route of ["/", "/sobre-karla"]) {
-        await devicePage.goto(`${baseUrl}${route}`);
-        const portrait = devicePage.getByRole("img", {
-          name: "Karla Norin Vásquez, abogada",
-        });
-        await expect(portrait, `${profile} ${route}`).toBeVisible();
-        await expect
-          .poll(() =>
-            portrait.evaluate((image: HTMLImageElement) => image.naturalWidth),
-          )
-          .toBeGreaterThan(0);
-        const overflow = await devicePage.evaluate(
-          () =>
-            document.documentElement.scrollWidth -
-            document.documentElement.clientWidth,
-        );
-        expect(overflow, `${profile} ${route} overflow`).toBeLessThanOrEqual(1);
-      }
-    } finally {
-      await context.close();
-    }
+test("@device-profile portrait remains usable on additional Apple and Android profiles", async ({
+  page,
+}) => {
+  for (const route of ["/", "/sobre-karla"]) {
+    await page.goto(route);
+    const portrait = page.getByRole("img", {
+      name: "Karla Norin Vásquez, abogada",
+    });
+    await expect(portrait).toBeVisible();
+    await expect
+      .poll(() =>
+        portrait.evaluate((image: HTMLImageElement) => image.naturalWidth),
+      )
+      .toBeGreaterThan(0);
+    const overflow = await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth -
+        document.documentElement.clientWidth,
+    );
+    expect(overflow, `${route} overflow`).toBeLessThanOrEqual(1);
   }
 });
 
