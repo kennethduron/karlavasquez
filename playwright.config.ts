@@ -1,6 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const remoteBaseUrl = process.env.PLAYWRIGHT_BASE_URL;
+const useProductionServer =
+  process.env.CI && !process.env.FIRESTORE_EMULATOR_HOST;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -65,7 +67,9 @@ export default defineConfig({
   webServer: remoteBaseUrl
     ? undefined
     : {
-        command: "npm run dev -- --hostname 127.0.0.1",
+        command: useProductionServer
+          ? "npm run start -- --hostname 127.0.0.1"
+          : "npm run dev -- --hostname 127.0.0.1",
         url: "http://127.0.0.1:3000",
         reuseExistingServer:
           !process.env.CI && !process.env.FIRESTORE_EMULATOR_HOST,
