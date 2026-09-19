@@ -78,7 +78,7 @@ test("official Karla portrait is visible and correctly ordered in both heroes", 
       ["/", ".home-hero-copy"],
       ["/sobre-karla", ".page-hero-content"],
     ] as const) {
-      await page.goto(route);
+      await page.goto(route, { waitUntil: "domcontentloaded" });
       const portrait = page.getByRole("img", {
         name: "Karla Norin Vásquez, abogada",
       });
@@ -113,7 +113,7 @@ test("@device-profile portrait remains usable on additional Apple and Android pr
   page,
 }) => {
   for (const route of ["/", "/sobre-karla"]) {
-    await page.goto(route);
+    await page.goto(route, { waitUntil: "domcontentloaded" });
     const portrait = page.getByRole("img", {
       name: "Karla Norin Vásquez, abogada",
     });
