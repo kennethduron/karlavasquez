@@ -5,6 +5,23 @@ export const runtime = "nodejs";
 
 const bucketName = "knv-bufete-legal-backups";
 
+export function GET() {
+  return new Response(
+    `<!doctype html><html lang="es"><meta charset="utf-8"><title>KNV infrastructure smoke</title><body><label>Token <input id="token" type="password" autocomplete="off"></label><button id="b2">B2</button><button id="resend">Resend</button><pre id="result">READY</pre><script>
+const token=document.getElementById('token');const result=document.getElementById('result');
+async function run(path){result.textContent='RUNNING';const response=await fetch(path,{method:'POST',headers:{'x-knv-smoke-token':token.value}});result.textContent=JSON.stringify(await response.json());}
+document.getElementById('b2').onclick=()=>run('/api/ops/b2-smoke');
+document.getElementById('resend').onclick=()=>run('/api/ops/resend-smoke');
+</script></body></html>`,
+    {
+      headers: {
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "no-store",
+      },
+    },
+  );
+}
+
 async function apiPost(
   url: string,
   token: string,
@@ -29,7 +46,10 @@ export async function POST(request: NextRequest) {
   const keyId = process.env.B2_KEY_ID;
   const applicationKey = process.env.B2_APPLICATION_KEY;
   if (!keyId || !applicationKey) {
-    return NextResponse.json({ status: "FAIL", stage: "configuration" }, { status: 500 });
+    return NextResponse.json(
+      { status: "FAIL", stage: "configuration" },
+      { status: 500 },
+    );
   }
 
   let uploadedFileId: string | undefined;
