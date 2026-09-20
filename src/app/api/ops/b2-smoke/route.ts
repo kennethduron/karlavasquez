@@ -70,8 +70,7 @@ export async function POST(request: NextRequest) {
           apiUrl: string;
           downloadUrl: string;
           allowed?: {
-            bucketId?: string;
-            bucketName?: string;
+            buckets?: Array<{ id?: string; name?: string | null }>;
             capabilities?: string[];
           };
         };
@@ -79,9 +78,16 @@ export async function POST(request: NextRequest) {
     };
     const storage = auth.apiInfo?.storageApi;
     const allowed = storage?.allowed;
-    if (!storage || !allowed?.bucketId || allowed.bucketName !== bucketName) {
+    const authorizedBuckets = allowed?.buckets ?? [];
+    if (
+      !storage ||
+      authorizedBuckets.length !== 1 ||
+      !authorizedBuckets[0]?.id ||
+      authorizedBuckets[0].name !== bucketName
+    ) {
       throw new Error("bucket scope");
     }
+    const authorizedBucketId = authorizedBuckets[0].id;
     authorizationToken = auth.authorizationToken;
     apiUrl = storage.apiUrl;
 
@@ -94,7 +100,7 @@ export async function POST(request: NextRequest) {
     const uploadTarget = (await apiPost(
       `${apiUrl}/b2api/v3/b2_get_upload_url`,
       authorizationToken,
-      { bucketId: allowed.bucketId },
+      { bucketId: authorizedBucketId },
     )) as { uploadUrl: string; authorizationToken: string };
     const upload = await fetch(uploadTarget.uploadUrl, {
       method: "POST",
@@ -140,7 +146,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       status: "PASS",
       bucketScope: `${bucketName} ONLY`,
-      capabilities: allowed.capabilities ?? [],
+      capabilities: allowed?.capabilities ?? [],
       write: true,
       read: true,
       checksumValid: true,
