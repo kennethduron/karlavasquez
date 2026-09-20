@@ -5,6 +5,16 @@ export const runtime = "nodejs";
 
 const bucketName = "knv-bufete-legal-backups";
 
+class B2SmokeError extends Error {
+  constructor(
+    readonly stage: string,
+    readonly providerStatus?: number,
+    readonly observed?: Record<string, boolean | number>,
+  ) {
+    super(stage);
+  }
+}
+
 export function GET() {
   return new Response(
     `<!doctype html><html lang="es"><meta charset="utf-8"><title>KNV infrastructure smoke</title><body><label>Token <input id="token" type="password" autocomplete="off"></label><button id="b2">B2</button><button id="resend">Resend</button><pre id="result">READY</pre><script>
@@ -26,6 +36,7 @@ async function apiPost(
   url: string,
   token: string,
   body: Record<string, string>,
+  stage: string,
 ) {
   const response = await fetch(url, {
     method: "POST",
@@ -33,7 +44,7 @@ async function apiPost(
     body: JSON.stringify(body),
     cache: "no-store",
   });
-  if (!response.ok) throw new Error(`B2 API ${response.status}`);
+  if (!response.ok) throw new B2SmokeError(stage, response.status);
   return response.json() as Promise<Record<string, unknown>>;
 }
 
@@ -62,7 +73,9 @@ export async function POST(request: NextRequest) {
       "https://api.backblazeb2.com/b2api/v4/b2_authorize_account",
       { headers: { Authorization: `Basic ${basic}` }, cache: "no-store" },
     );
-    if (!authResponse.ok) throw new Error(`authorize ${authResponse.status}`);
+    if (!authResponse.ok) {
+      throw new B2SmokeError("authorize", authResponse.status);
+    }
     const auth = (await authResponse.json()) as {
       authorizationToken: string;
       apiInfo?: {
@@ -85,7 +98,14 @@ export async function POST(request: NextRequest) {
       !authorizedBuckets[0]?.id ||
       authorizedBuckets[0].name !== bucketName
     ) {
-      throw new Error("bucket scope");
+      throw new B2SmokeError("bucket-scope", undefined, {
+        storageApiPresent: Boolean(storage),
+        allowedPresent: Boolean(allowed),
+        bucketsArray: Array.isArray(allowed?.buckets),
+        bucketCount: authorizedBuckets.length,
+        bucketIdPresent: Boolean(authorizedBuckets[0]?.id),
+        bucketNameMatches: authorizedBuckets[0]?.name === bucketName,
+      });
     }
     const authorizedBucketId = authorizedBuckets[0].id;
     authorizationToken = auth.authorizationToken;
@@ -101,6 +121,7 @@ export async function POST(request: NextRequest) {
       `${apiUrl}/b2api/v3/b2_get_upload_url`,
       authorizationToken,
       { bucketId: authorizedBucketId },
+      "get-upload-url",
     )) as { uploadUrl: string; authorizationToken: string };
     const upload = await fetch(uploadTarget.uploadUrl, {
       method: "POST",
@@ -118,7 +139,7 @@ export async function POST(request: NextRequest) {
       body: content,
       cache: "no-store",
     });
-    if (!upload.ok) throw new Error(`upload ${upload.status}`);
+    if (!upload.ok) throw new B2SmokeError("upload", upload.status);
     const uploaded = (await upload.json()) as { fileId?: string };
     uploadedFileId = uploaded.fileId;
 
@@ -129,17 +150,18 @@ export async function POST(request: NextRequest) {
         .join("/")}`,
       { headers: { Authorization: authorizationToken }, cache: "no-store" },
     );
-    if (!download.ok) throw new Error(`download ${download.status}`);
+    if (!download.ok) throw new B2SmokeError("download", download.status);
     const restored = Buffer.from(await download.arrayBuffer());
     const checksumValid =
       restored.length === content.length &&
       createHash("sha256").update(restored).digest("hex") === sha256;
-    if (!checksumValid) throw new Error("checksum");
+    if (!checksumValid) throw new B2SmokeError("checksum");
 
     await apiPost(
       `${apiUrl}/b2api/v3/b2_delete_file_version`,
       authorizationToken,
       { fileName: remoteName, fileId: uploadedFileId ?? "" },
+      "cleanup",
     );
     uploadedFileId = undefined;
 
@@ -152,14 +174,28 @@ export async function POST(request: NextRequest) {
       checksumValid: true,
       temporaryObjectRemoved: true,
     });
-  } catch {
+  } catch (error) {
     if (uploadedFileId && authorizationToken && apiUrl && remoteName) {
       await apiPost(
         `${apiUrl}/b2api/v3/b2_delete_file_version`,
         authorizationToken,
         { fileName: remoteName, fileId: uploadedFileId },
+        "cleanup-after-failure",
       ).catch(() => undefined);
     }
-    return NextResponse.json({ status: "FAIL" }, { status: 500 });
+    const diagnostic =
+      error instanceof B2SmokeError
+        ? {
+            stage: error.stage,
+            ...(error.providerStatus
+              ? { providerStatus: error.providerStatus }
+              : {}),
+            ...(error.observed ? { observed: error.observed } : {}),
+          }
+        : { stage: "unexpected" };
+    return NextResponse.json(
+      { status: "FAIL", ...diagnostic },
+      { status: 500 },
+    );
   }
 }
