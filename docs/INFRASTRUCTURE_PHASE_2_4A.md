@@ -60,14 +60,14 @@ stored in Git or local environment files.
 | `RESEND_FROM_NAME`               | Production | Config | Configured                  |
 | `RESEND_FROM_EMAIL`              | —          | —      | Pending domain verification |
 | `CLOUDINARY_CLOUD_NAME`          | Production | Config | Configured                  |
-| `CLOUDINARY_API_KEY`             | Production | Config | Configured, server runtime  |
-| `CLOUDINARY_API_SECRET`          | Production | Secret | Configured                  |
+| `CLOUDINARY_API_KEY`             | Production | Secret | Configured, server runtime  |
+| `CLOUDINARY_API_SECRET`          | Production | Secret | Configured after rotation   |
 | `NEXT_PUBLIC_FIREBASE_VAPID_KEY` | Production | Config | Configured                  |
-| `B2_KEY_ID`                      | —          | —      | Blocked by B2 account error |
-| `B2_APPLICATION_KEY`             | —          | —      | Blocked by B2 account error |
-| `B2_BUCKET_NAME`                 | —          | —      | Blocked by B2 account error |
-| `B2_ENDPOINT`                    | —          | —      | Blocked by B2 account error |
-| `B2_REGION`                      | —          | —      | Blocked by B2 account error |
+| `B2_KEY_ID`                      | Production | Secret | Configured                  |
+| `B2_APPLICATION_KEY`             | Production | Secret | Configured                  |
+| `B2_BUCKET_NAME`                 | Production | Config | Configured                  |
+| `B2_ENDPOINT`                    | Production | Config | Configured                  |
+| `B2_REGION`                      | Production | Config | Configured                  |
 
 Preview received no new production-provider secrets. The existing Firebase
 Preview variables were preserved for the current runtime.
@@ -115,6 +115,19 @@ The application-facing contracts live in
 `src/infrastructure/<provider>` and must not be called directly from UI
 components.
 
+## Cloudinary credential rotation
+
+The Cloudinary credential that appeared during diagnostic output was revoked.
+Its credential row no longer exists in the dedicated Cloudinary product
+environment. A replacement credential is active, and its API key and secret
+were written directly to Vercel Production as server-only secrets. The cloud
+name remains a non-secret Production configuration value. No replacement value
+was printed, written to a local file or committed to Git.
+
+Cloudinary remains restricted to public website and editorial media. Private
+client records and legal documents must use the private Supabase Storage
+boundary instead.
+
 ## FCM preparation
 
 The existing Firebase project `knv-development` is retained. Auth, Firestore,
@@ -161,14 +174,20 @@ Future storage flow:
 
 `Supabase private Storage -> object inventory -> encrypted archive/copy -> private B2 bucket`
 
-Backups require a bucket-scoped B2 application key. The master account key is
-not permitted. Schedules, retention, immutable-copy strategy and restore tests
-belong to Phase 2.4B after the Supabase cutover is validated.
+Backups use the private `knv-bufete-legal-backups` bucket in the provider's US
+East region. Provider-managed server-side encryption is enabled, public access
+is disabled, Object Lock is not enabled, and the bucket contains no production
+data during this preparation phase.
 
-B2 Cloud Storage was enabled on the dedicated Backblaze account and the account
-reports its data region as `US East`. Bucket creation is currently blocked by a
-provider-side `Account trouble` B2 API response. No bucket or application key
-was created, no master key was used, and no billing information was added.
+The application key `knv-backup-restore-production` is restricted to that
+single bucket and uses the provider console's Read and Write permission preset
+needed for future backup and restore operations. No master account key was
+used. The preset also grants management of settings on the scoped bucket, so
+Phase 2.4B must keep runtime access server-only and should reassess whether a
+narrower custom capability set is available before scheduling backups.
+
+Schedules, retention, immutable-copy strategy, backup execution and restore
+tests belong to Phase 2.4B after the Supabase cutover is validated.
 
 ## Connectivity checks
 
@@ -185,8 +204,16 @@ are explicitly skipped.
 
 Authenticated dashboards independently confirmed that the Supabase project is
 Healthy, Resend accepted creation of a send-only key, Cloudinary loaded the
-dedicated product environment, and Firebase FCM accepted VAPID generation.
-Backblaze connectivity is blocked by the account error described above.
+dedicated product environment with the replacement credential active, Firebase
+FCM accepted VAPID generation, and Backblaze lists the private bucket and its
+single-bucket application key. The replaced Cloudinary credential was deleted
+and is no longer available for authentication.
+
+No production email, media upload, legal-document write or backup write was
+performed. Direct authenticated API checks remain available through
+`npm run test:providers` when the server-only variables are deliberately loaded
+into a secure local or CI runtime; they were not copied out of Vercel merely to
+run a local test.
 
 ## Deferred work
 
