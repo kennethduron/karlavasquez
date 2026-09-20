@@ -822,6 +822,16 @@ h1 {
   color: #185f34;
 }
 
+.security-card--stacked {
+  align-items: flex-start;
+}
+
+.security-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
 .security-remove {
   min-height: 2.65rem;
   border: 1px solid #e6b8b4;

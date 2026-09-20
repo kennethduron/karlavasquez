@@ -105,6 +105,7 @@ $$;
 
 revoke all on function public.next_human_id(text, text) from public, anon, authenticated;
 revoke all on function public.assign_human_id() from public, anon, authenticated;
+revoke all on function public.handle_new_auth_user() from public, anon, authenticated;
 grant execute on function public.is_active_user() to authenticated;
 grant execute on function public.has_permission(text) to authenticated;
 grant execute on function public.can_access_case(uuid) to authenticated;
@@ -144,6 +145,7 @@ alter table public.events enable row level security;
 alter table public.reminders enable row level security;
 alter table public.contact_logs enable row level security;
 alter table public.notifications enable row level security;
+alter table public.push_subscriptions enable row level security;
 alter table public.audit_logs enable row level security;
 alter table public.article_categories enable row level security;
 alter table public.articles enable row level security;
@@ -231,7 +233,14 @@ create policy case_history_write on public.case_status_history for insert to aut
   with check (public.can_access_case(case_id) and public.has_permission('cases.edit'));
 create policy case_assignments_read on public.case_assignments for select to authenticated using (public.can_access_case(case_id));
 create policy case_assignments_write on public.case_assignments for all to authenticated
-  using (public.has_permission('cases.assign')) with check (public.has_permission('cases.assign'));
+  using (
+    public.has_permission('cases.assign')
+    and (public.has_permission('cases.view_all') or public.can_access_case(case_id))
+  )
+  with check (
+    public.has_permission('cases.assign')
+    and (public.has_permission('cases.view_all') or public.can_access_case(case_id))
+  );
 create policy case_dates_read on public.case_dates for select to authenticated using (public.can_access_case(case_id));
 create policy case_dates_write on public.case_dates for all to authenticated
   using (public.can_access_case(case_id) and public.has_permission('events.edit'))
@@ -330,6 +339,15 @@ create policy contact_logs_create on public.contact_logs for insert to authentic
 create policy notifications_self_read on public.notifications for select to authenticated using (user_id = auth.uid());
 create policy notifications_self_update on public.notifications for update to authenticated
   using (user_id = auth.uid()) with check (user_id = auth.uid());
+create policy push_subscriptions_self_read on public.push_subscriptions for select to authenticated
+  using (user_id = auth.uid() and public.is_active_user());
+create policy push_subscriptions_self_create on public.push_subscriptions for insert to authenticated
+  with check (user_id = auth.uid() and public.is_active_user());
+create policy push_subscriptions_self_update on public.push_subscriptions for update to authenticated
+  using (user_id = auth.uid() and public.is_active_user())
+  with check (user_id = auth.uid() and public.is_active_user());
+create policy push_subscriptions_self_delete on public.push_subscriptions for delete to authenticated
+  using (user_id = auth.uid() and public.is_active_user());
 
 create policy audit_read on public.audit_logs for select to authenticated using (public.has_permission('audit.view'));
 
@@ -367,22 +385,26 @@ create policy notification_preferences_self on public.notification_preferences f
 
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (
-  'private-legal-documents',
-  'private-legal-documents',
+  'legal-documents',
+  'legal-documents',
   false,
   26214400,
   array[
     'application/pdf',
     'image/jpeg',
     'image/png',
+    'image/webp',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   ]
 )
-on conflict (id) do nothing;
+on conflict (id) do update set
+  public = false,
+  file_size_limit = excluded.file_size_limit,
+  allowed_mime_types = excluded.allowed_mime_types;
 
 create policy private_documents_download on storage.objects for select to authenticated
 using (
-  bucket_id = 'private-legal-documents'
+  bucket_id = 'legal-documents'
   and exists (
     select 1
     from public.document_versions dv
@@ -392,9 +414,23 @@ using (
   )
 );
 
+create policy private_documents_upload on storage.objects for insert to authenticated
+with check (
+  bucket_id = 'legal-documents'
+  and exists (
+    select 1
+    from public.document_versions dv
+    where dv.storage_bucket = bucket_id
+      and dv.storage_path = name
+      and dv.uploaded_by = auth.uid()
+      and public.has_permission('documents.upload')
+      and public.can_access_document(dv.document_id)
+  )
+);
+
 create policy private_documents_manage on storage.objects for delete to authenticated
 using (
-  bucket_id = 'private-legal-documents'
+  bucket_id = 'legal-documents'
   and exists (
     select 1
     from public.document_versions dv
@@ -469,6 +505,11 @@ as $$
 declare
   target_status_key text;
 begin
+  if old.client_id is distinct from new.client_id
+     and auth.role() is distinct from 'service_role' then
+    raise exception 'Case client is immutable';
+  end if;
+
   if old.responsible_user_id is distinct from new.responsible_user_id
      and auth.role() is distinct from 'service_role'
      and not public.has_permission('cases.assign') then

@@ -1,10 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { sendPasswordResetEmail } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getFirebaseClientAuth } from "@/infrastructure/firebase/client";
 import { passwordRecoverySchema } from "@/lib/validation/auth";
 
 const GENERIC_SUCCESS =
@@ -29,10 +27,10 @@ export function RecoveryForm() {
     }
     setFieldError(undefined);
     try {
-      const auth = await getFirebaseClientAuth();
-      await sendPasswordResetEmail(auth, parsed.data.email, {
-        url: `${window.location.origin}/iniciar-sesion?restablecida=1`,
-        handleCodeInApp: false,
+      await fetch("/api/auth/recovery", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: parsed.data.email }),
       });
     } catch {
       // Deliberately indistinguishable to prevent account enumeration.

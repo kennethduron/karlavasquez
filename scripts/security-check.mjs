@@ -17,12 +17,12 @@ if (!gitignore.includes("!.env.example"))
   failures.push(".env.example is not tracked.");
 
 const packageJson = read("package.json");
-if (packageJson.includes('"@supabase/')) {
-  failures.push("Supabase remains an active runtime dependency.");
-}
+if (!packageJson.includes('"@supabase/ssr"'))
+  failures.push("Supabase SSR is not an active runtime dependency.");
 
 for (const forbiddenPublicSecret of [
   "NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY",
+  "NEXT_PUBLIC_SUPABASE_SECRET_KEY",
   "NEXT_PUBLIC_CLOUDINARY_API_SECRET",
   "NEXT_PUBLIC_B2_APPLICATION_KEY",
   "NEXT_PUBLIC_RESEND_API_KEY",
@@ -46,10 +46,16 @@ for (const file of sourceFiles) {
     failures.push(`Dangerous eval in ${displayPath}`);
   if (source.includes("dangerouslySetInnerHTML"))
     failures.push(`Raw HTML in ${displayPath}`);
-  if (/from ["']@supabase\//.test(source))
-    failures.push(`Supabase runtime import in ${displayPath}`);
   if (
-    /NEXT_PUBLIC_(?:FIREBASE_PRIVATE_KEY|SUPABASE_SERVICE_ROLE_KEY|CLOUDINARY_API_SECRET|B2_APPLICATION_KEY|RESEND_API_KEY)/.test(
+    /from ["']firebase\/(?:auth|firestore|database|storage)["']/.test(source) ||
+    /from ["']firebase-admin\/(?:auth|firestore|database|storage)["']/.test(
+      source,
+    )
+  ) {
+    failures.push(`Non-FCM Firebase runtime import in ${displayPath}`);
+  }
+  if (
+    /NEXT_PUBLIC_(?:FIREBASE_PRIVATE_KEY|SUPABASE_(?:SERVICE_ROLE|SECRET)_KEY|CLOUDINARY_API_SECRET|B2_APPLICATION_KEY|RESEND_API_KEY)/.test(
       source,
     )
   ) {
@@ -95,42 +101,28 @@ if (!admin.includes("getApps().length"))
 if (/firebase-admin\/storage|getAdminStorage/.test(admin))
   failures.push("Firebase Storage is active despite the Spark-only policy.");
 
-const sessionRoute = read("src/app/api/auth/session/route.ts");
+const supabaseServer = read("src/infrastructure/supabase/server.ts");
 for (const control of [
   "httpOnly: true",
   'sameSite: "lax"',
-  "verifyIdToken(idToken, true)",
-  "createSessionCookie",
+  "environment.publishableKey",
+  "environment.secretKey",
 ]) {
-  if (!sessionRoute.includes(control))
-    failures.push(`Session control missing: ${control}`);
+  if (!supabaseServer.includes(control))
+    failures.push(`Supabase server control missing: ${control}`);
 }
 
-const firestoreRules = read("firestore.rules");
-if (
-  /match \/\{document=\*\*\}[^}]+allow read, write: if request\.auth != null/s.test(
-    firestoreRules,
-  )
-) {
-  failures.push("Firestore has a global authenticated-user allow rule.");
-}
-for (const control of [
-  "match /auditLogs/{auditId}",
-  "allow create, update, delete: if false",
-  "match /counters/{counterId}",
-  "hasPermission('cases.view')",
-  "immutable(['humanId', 'clientId', 'createdAt', 'createdBy'])",
+for (const retiredFirebaseFile of [
+  "firebase.json",
+  "firestore.rules",
+  "firestore.indexes.json",
 ]) {
-  if (!firestoreRules.includes(control))
-    failures.push(`Firestore control missing: ${control}`);
+  if (existsSync(join(root, retiredFirebaseFile))) {
+    failures.push(
+      `Retired Firebase runtime file remains: ${retiredFirebaseFile}`,
+    );
+  }
 }
-
-const firebaseConfig = read("firebase.json");
-if (/"hosting"\s*:/.test(firebaseConfig)) {
-  failures.push("Firebase Hosting is configured; Vercel is the active host.");
-}
-if (/"storage"\s*:|"functions"\s*:/.test(firebaseConfig))
-  failures.push("Paid Firebase Storage or Functions is configured.");
 if (existsSync(join(root, "storage.rules")))
   failures.push("Active Storage Rules must be absent on Spark.");
 if (
@@ -164,4 +156,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log("Firebase security foundation checks passed.");
+console.log("Phase 2.4B Supabase and FCM-only security checks passed.");

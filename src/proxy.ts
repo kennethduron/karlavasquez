@@ -1,15 +1,12 @@
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+import { refreshSupabaseSession } from "@/infrastructure/supabase/proxy";
 
-import { SESSION_COOKIE_NAME } from "@/lib/auth/session-constants";
-
-export function proxy(request: NextRequest) {
-  const hasSessionCookie = request.cookies.has(SESSION_COOKIE_NAME);
-  if (request.nextUrl.pathname.startsWith("/panel") && !hasSessionCookie) {
-    const loginUrl = new URL("/iniciar-sesion", request.url);
-    loginUrl.searchParams.set("next", request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
-  }
-  return NextResponse.next();
+export async function proxy(request: NextRequest) {
+  return refreshSupabaseSession(request);
 }
 
-export const config = { matcher: ["/panel/:path*"] };
+export const config = {
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+  ],
+};

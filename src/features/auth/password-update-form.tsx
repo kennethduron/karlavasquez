@@ -1,14 +1,12 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { confirmPasswordReset, verifyPasswordResetCode } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getFirebaseClientAuth } from "@/infrastructure/firebase/client";
 import { passwordUpdateSchema } from "@/lib/validation/auth";
 
-export function PasswordUpdateForm({ oobCode }: { oobCode?: string }) {
+export function PasswordUpdateForm() {
   const router = useRouter();
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState<string>();
@@ -25,17 +23,17 @@ export function PasswordUpdateForm({ oobCode }: { oobCode?: string }) {
       setErrors(parsed.error.flatten().fieldErrors);
       return;
     }
-    if (!oobCode) {
-      setMessage("El enlace no es válido o ya expiró.");
-      return;
-    }
     setPending(true);
     setErrors({});
     try {
-      const auth = await getFirebaseClientAuth();
-      await verifyPasswordResetCode(auth, oobCode);
-      await confirmPasswordReset(auth, oobCode, parsed.data.password);
+      const response = await fetch("/api/auth/password", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: parsed.data.password }),
+      });
+      if (!response.ok) throw new Error("Password update failed");
       router.replace("/iniciar-sesion?restablecida=1");
+      router.refresh();
     } catch {
       setMessage("El enlace no es válido o ya expiró. Solicite uno nuevo.");
       setPending(false);

@@ -10,8 +10,10 @@ const adminEnvironmentSchema = z.object({
 
 const supabaseServerEnvironmentSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z
+    .string()
+    .startsWith("sb_publishable_"),
+  SUPABASE_SECRET_KEY: z.string().startsWith("sb_secret_"),
   SUPABASE_DB_URL: z.url().optional(),
 });
 
@@ -47,18 +49,7 @@ function parseServerEnvironment<T>(
   return parsed.data;
 }
 
-export function getFirebaseAdminEnvironment() {
-  if (
-    process.env.FIREBASE_AUTH_EMULATOR_HOST ||
-    process.env.FIRESTORE_EMULATOR_HOST
-  ) {
-    const projectId =
-      process.env.FIREBASE_PROJECT_ID ??
-      process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID ??
-      "knv-local";
-    return { projectId, emulator: true as const };
-  }
-
+export function getFirebaseMessagingAdminEnvironment() {
   const parsed = adminEnvironmentSchema.safeParse(process.env);
   if (!parsed.success) {
     throw new Error("Firebase Admin configuration is missing or invalid.");
@@ -68,7 +59,6 @@ export function getFirebaseAdminEnvironment() {
     projectId: parsed.data.FIREBASE_PROJECT_ID,
     clientEmail: parsed.data.FIREBASE_CLIENT_EMAIL,
     privateKey: parsed.data.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
-    emulator: false as const,
   };
 }
 
@@ -89,8 +79,8 @@ export function getSupabaseServerEnvironment(
   );
   return {
     url: data.NEXT_PUBLIC_SUPABASE_URL,
-    anonKey: data.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    serviceRoleKey: data.SUPABASE_SERVICE_ROLE_KEY,
+    publishableKey: data.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
+    secretKey: data.SUPABASE_SECRET_KEY,
     databaseUrl: data.SUPABASE_DB_URL,
   };
 }

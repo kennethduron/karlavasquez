@@ -16,24 +16,24 @@
     "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "test:e2e:remote": "playwright test tests/e2e/public-site.spec.ts",
-    "test:e2e:firebase:unit": "playwright test --project=chromium --grep @firebase",
-    "test:e2e:firebase": "firebase emulators:exec --project knv-local --only auth,firestore \"npm run test:e2e:firebase:unit\"",
-    "test:firebase:real": "node --env-file=.env.local scripts/firebase-real-smoke.mjs",
-    "test:firebase:real:roles": "node --env-file=.env.local scripts/firebase-real-roles-smoke.mjs",
-    "test:firebase:real:session": "node --env-file=.env.local scripts/firebase-real-session-smoke.mjs",
+    "test:supabase:auth": "node --env-file=.env.local scripts/supabase-auth-smoke.mjs",
+    "test:supabase:storage": "node --env-file=.env.local scripts/supabase-storage-smoke.mjs",
+    "test:fcm:subscriptions": "node --env-file=.env.local scripts/fcm-subscription-boundary-smoke.mjs",
+    "test:fcm:connectivity": "node --env-file=.env.local scripts/firebase-messaging-connectivity.mjs",
+    "test:supabase:rls": "supabase test db supabase/tests/rls_attack_tests.sql",
+    "supabase:lint": "supabase db lint --local --level warning",
     "test:providers": "node --env-file-if-exists=.env.local scripts/provider-connectivity-check.mjs",
-    "firebase:seed:authorization": "node --experimental-strip-types --env-file=.env.local scripts/seed-firebase-authorization.mjs",
-    "firebase:emulators": "firebase emulators:start --project knv-local --only auth,firestore",
-    "test:rules:unit": "vitest run --config vitest.rules.config.ts",
-    "test:rules": "firebase emulators:exec --project knv-local --only auth,firestore \"npm run test:rules:unit\"",
+    "test:resend:production": "node scripts/resend-production-smoke.mjs --confirm-phase-smoke",
     "security:check": "node scripts/security-check.mjs",
-    "quality": "npm run typecheck && npm run lint && npm run test && npm run test:rules && npm run security:check && npm run build"
+    "quality": "npm run typecheck && npm run lint && npm run test && npm run security:check && npm run build"
   },
   "engines": {
     "node": "22.x"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.116.0",
     "clsx": "^2.1.1",
     "firebase": "^12.19.0",
     "firebase-admin": "^14.4.0",
@@ -46,7 +46,6 @@
     "zod": "^4.6.4"
   },
   "devDependencies": {
-    "@firebase/rules-unit-testing": "^5.0.2",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^7.0.1",
@@ -58,7 +57,6 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
     "eslint-config-prettier": "^10.1.8",
-    "firebase-tools": "^15.30.0",
     "jsdom": "^30.0.1",
     "prettier": "^3.9.6",
     "sharp": "^0.35.4",
@@ -67,6 +65,8 @@
     "vitest": "^5.0.0"
   },
   "overrides": {
+    "gaxios": "7.3.1",
+    "uuid": "11.1.1",
     "firebase-admin": {
       "jwks-rsa": {
         "jose": "4.15.9"

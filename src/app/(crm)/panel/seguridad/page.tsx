@@ -1,5 +1,6 @@
 import { ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
+import { PushNotificationControl } from "@/components/crm/push-notification-control";
 import { requireServerSession } from "@/lib/auth/session";
 
 export const metadata: Metadata = { title: "Seguridad de la cuenta" };
@@ -13,8 +14,8 @@ export default async function SecurityPage() {
           <p className="eyebrow">Cuenta</p>
           <h1>Seguridad</h1>
           <p>
-            La identidad se valida mediante Firebase Authentication y una cookie
-            de sesión HttpOnly.
+            La identidad se valida mediante Supabase Auth y cookies de sesión
+            HttpOnly.
           </p>
         </div>
       </div>
@@ -39,6 +40,7 @@ export default async function SecurityPage() {
           </div>
           <span className="security-badge is-on">Activa</span>
         </article>
+        <PushNotificationControl />
       </section>
     </main>
   );

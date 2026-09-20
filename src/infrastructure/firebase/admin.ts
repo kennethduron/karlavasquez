@@ -1,17 +1,13 @@
 import "server-only";
 
 import { cert, getApp, getApps, initializeApp } from "firebase-admin/app";
-import { getAuth } from "firebase-admin/auth";
-import { getFirestore } from "firebase-admin/firestore";
+import { getMessaging } from "firebase-admin/messaging";
 
-import { getFirebaseAdminEnvironment } from "@/lib/env/server";
+import { getFirebaseMessagingAdminEnvironment } from "@/lib/env/server";
 
 export function getFirebaseAdminApp() {
   if (getApps().length) return getApp();
-  const environment = getFirebaseAdminEnvironment();
-  if (environment.emulator) {
-    return initializeApp({ projectId: environment.projectId });
-  }
+  const environment = getFirebaseMessagingAdminEnvironment();
   return initializeApp({
     credential: cert({
       projectId: environment.projectId,
@@ -22,5 +18,4 @@ export function getFirebaseAdminApp() {
   });
 }
 
-export const getAdminAuth = () => getAuth(getFirebaseAdminApp());
-export const getAdminFirestore = () => getFirestore(getFirebaseAdminApp());
+export const getAdminMessaging = () => getMessaging(getFirebaseAdminApp());

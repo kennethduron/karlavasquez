@@ -1,16 +1,15 @@
 import { describe, expect, it } from "vitest";
 
 import {
-  getFirebaseClientEnvironment,
-  getOptionalSupabaseClientEnvironment,
+  getFirebaseMessagingEnvironment,
+  getSupabaseClientEnvironment,
 } from "./client";
 
 describe("client environment validation", () => {
-  it("validates the active Firebase client configuration", () => {
+  it("validates the FCM-only Firebase client configuration", () => {
     expect(
-      getFirebaseClientEnvironment({
+      getFirebaseMessagingEnvironment({
         NEXT_PUBLIC_FIREBASE_API_KEY: "web-key",
-        NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: "knv-development.firebaseapp.com",
         NEXT_PUBLIC_FIREBASE_PROJECT_ID: "knv-development",
         NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: "123",
         NEXT_PUBLIC_FIREBASE_APP_ID: "app-id",
@@ -18,12 +17,23 @@ describe("client environment validation", () => {
     ).toMatchObject({ projectId: "knv-development" });
   });
 
-  it("keeps staged Supabase configuration optional as a complete pair", () => {
-    expect(getOptionalSupabaseClientEnvironment({})).toBeUndefined();
+  it("requires the authoritative Supabase client configuration", () => {
     expect(() =>
-      getOptionalSupabaseClientEnvironment({
+      getSupabaseClientEnvironment({
         NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
       }),
     ).toThrow("Supabase client configuration is incomplete or invalid.");
+  });
+
+  it("accepts only a modern Supabase publishable key", () => {
+    expect(
+      getSupabaseClientEnvironment({
+        NEXT_PUBLIC_SUPABASE_URL: "https://example.supabase.co",
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+          "sb_publishable_example-public-browser-key",
+      }),
+    ).toMatchObject({
+      publishableKey: "sb_publishable_example-public-browser-key",
+    });
   });
 });

@@ -360,8 +360,11 @@ create table public.document_versions (
   id uuid primary key default gen_random_uuid(),
   document_id uuid not null references public.documents(id) on delete restrict,
   version_number integer not null check (version_number > 0),
-  storage_bucket text not null default 'private-legal-documents',
-  storage_path text not null unique,
+  storage_bucket text not null default 'legal-documents'
+    check (storage_bucket = 'legal-documents'),
+  storage_path text not null unique check (
+    storage_path ~ '^(cases|clients)/[0-9a-f-]{36}/documents/[0-9a-f-]{36}/[0-9a-f-]{36}-[^/]+$'
+  ),
   original_filename text not null,
   mime_type text not null,
   size_bytes bigint not null check (size_bytes > 0 and size_bytes <= 26214400),
@@ -461,6 +464,18 @@ create table public.notifications (
   action_path text,
   read_at timestamptz,
   created_at timestamptz not null default now()
+);
+
+create table public.push_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  token text not null unique check (char_length(token) between 20 and 4096),
+  platform text not null default 'web' check (platform in ('web')),
+  user_agent_summary text check (char_length(user_agent_summary) <= 200),
+  enabled boolean not null default true,
+  last_seen_at timestamptz not null default now(),
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
 );
 
 create table public.audit_logs (
@@ -575,6 +590,28 @@ begin
 end;
 $$;
 
+create or replace function public.handle_new_auth_user()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  insert into public.profiles (id, display_name, status)
+  values (
+    new.id,
+    coalesce(nullif(btrim(new.raw_user_meta_data ->> 'display_name'), ''), 'Usuario invitado'),
+    'invited'
+  )
+  on conflict (id) do nothing;
+  return new;
+end;
+$$;
+
+create trigger auth_user_profile
+after insert on auth.users
+for each row execute function public.handle_new_auth_user();
+
 create or replace function public.next_human_id(entity text, prefix text)
 returns text
 language plpgsql
@@ -635,7 +672,7 @@ begin
     'clients', 'consultation_followups', 'client_contacts', 'cases', 'case_dates',
     'case_contacts', 'notes', 'documents', 'tasks', 'events', 'article_categories',
     'articles', 'site_pages', 'site_settings', 'contact_submissions',
-    'system_settings', 'notification_preferences'
+    'system_settings', 'notification_preferences', 'push_subscriptions'
   ]
   loop
     execute format(
@@ -648,6 +685,7 @@ $$;
 
 create index consultations_status_received_idx on public.consultations(status_id, received_at desc);
 create index consultations_responsible_next_idx on public.consultations(responsible_user_id, next_action_at);
+create index push_subscriptions_user_enabled_idx on public.push_subscriptions(user_id, enabled);
 create index consultations_email_idx on public.consultations(email_normalized) where email_normalized is not null;
 create index consultations_phone_idx on public.consultations(phone_normalized) where phone_normalized is not null;
 create index consultations_search_name_trgm_idx on public.consultations using gin(search_name gin_trgm_ops);

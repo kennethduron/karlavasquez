@@ -4,10 +4,8 @@ import { Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getFirebaseClientAuth } from "@/infrastructure/firebase/client";
 import { loginSchema, safeInternalPath } from "@/lib/validation/auth";
 
 const GENERIC_ERROR =
@@ -37,19 +35,15 @@ export function LoginForm({ nextPath }: { nextPath?: string }) {
     }
     setFieldErrors({});
     try {
-      const auth = await getFirebaseClientAuth();
-      const credential = await signInWithEmailAndPassword(
-        auth,
-        parsed.data.email,
-        parsed.data.password,
-      );
-      const idToken = await credential.user.getIdToken(true);
       const response = await fetch("/api/auth/session", {
         method: "POST",
-        headers: { Authorization: `Bearer ${idToken}` },
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: parsed.data.email,
+          password: parsed.data.password,
+        }),
       });
-      await signOut(auth);
-      if (!response.ok) throw new Error("Session exchange failed");
+      if (!response.ok) throw new Error("Authentication failed");
       router.replace(safeInternalPath(nextPath));
       router.refresh();
     } catch {

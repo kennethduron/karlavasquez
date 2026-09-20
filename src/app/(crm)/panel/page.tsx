@@ -47,12 +47,11 @@ export default async function PanelFoundationPage() {
       </section>
       <section className="crm-welcome-card">
         <div>
-          <p className="eyebrow">Fase 1</p>
+          <p className="eyebrow">Infraestructura segura</p>
           <h2>Identidad y acceso configurados</h2>
           <p>
-            El panel valida con Firebase Admin la cookie de sesión, el perfil
-            activo, los roles y los permisos antes de entregar información
-            privada.
+            El panel valida con Supabase Auth la sesión, el perfil activo, los
+            roles y los permisos antes de entregar información privada.
           </p>
         </div>
         <Link href="/panel/seguridad">

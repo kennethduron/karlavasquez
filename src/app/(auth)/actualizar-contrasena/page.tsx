@@ -7,12 +7,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function PasswordUpdatePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ oobCode?: string }>;
-}) {
-  const { oobCode } = await searchParams;
+export default function PasswordUpdatePage() {
   return (
     <main className="auth-shell">
       <section className="auth-brand-panel" aria-labelledby="brand-title">
@@ -39,7 +34,7 @@ export default async function PasswordUpdatePage({
           <h2 id="password-title" className="auth-form-title">
             Nueva contraseña
           </h2>
-          <PasswordUpdateForm oobCode={oobCode} />
+          <PasswordUpdateForm />
         </div>
       </section>
     </main>

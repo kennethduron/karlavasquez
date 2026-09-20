@@ -10,14 +10,14 @@ export type Consultation = EntityBase & {
   email: string | null;
   phone: string | null;
   status: string;
-  responsibleUserId: string;
+  responsibleUserId: string | null;
 };
 
 export type Client = EntityBase & {
   humanId: string;
   displayName: string;
   status: string;
-  responsibleUserId: string;
+  responsibleUserId: string | null;
   sourceConsultationId: string | null;
 };
 
@@ -26,7 +26,7 @@ export type LegalCase = EntityBase & {
   clientId: string;
   title: string;
   status: string;
-  responsibleUserId: string;
+  responsibleUserId: string | null;
   assignedUserIds: string[];
 };
 
@@ -52,7 +52,7 @@ export type LegalDocument = EntityBase & {
 export type LegalTask = EntityBase & {
   title: string;
   status: string;
-  assignedTo: string;
+  assignedTo: string | null;
   caseId: string | null;
   dueAt: Date | null;
 };
@@ -61,7 +61,7 @@ export type LegalEvent = EntityBase & {
   title: string;
   startsAt: Date;
   endsAt: Date | null;
-  responsibleUserId: string;
+  responsibleUserId: string | null;
   caseId: string | null;
 };
 

@@ -1,35 +1,19 @@
 "use server";
 
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { getAdminAuth } from "@/infrastructure/firebase/admin";
-import { FirebaseAuditRepository } from "@/infrastructure/firebase/repositories/firebase-audit-repository";
-import { SESSION_COOKIE_NAME } from "@/lib/auth/session-constants";
+import { appendAuthAudit } from "@/infrastructure/supabase/audit";
+import { createSupabaseServerClient } from "@/infrastructure/supabase/server";
 
 export async function logoutAction() {
-  const cookieStore = await cookies();
-  const sessionCookie = cookieStore.get(SESSION_COOKIE_NAME)?.value;
-  if (sessionCookie) {
-    try {
-      const decoded = await getAdminAuth().verifySessionCookie(
-        sessionCookie,
-        true,
-      );
-      await getAdminAuth().revokeRefreshTokens(decoded.uid);
-      await new FirebaseAuditRepository().append({
-        actorUid: decoded.uid,
-        action: "auth.logout",
-        entityType: "user",
-        entityId: decoded.uid,
-        occurredAt: new Date(),
-        result: "success",
-        requestId: crypto.randomUUID(),
-        metadata: {},
-      });
-    } catch {
-      // Cookie cleanup must succeed even when Firebase already invalidated it.
-    }
+  const client = await createSupabaseServerClient();
+  const { data } = await client.auth.getUser();
+  if (data.user) {
+    await appendAuthAudit({
+      actorUserId: data.user.id,
+      action: "auth.logout",
+      outcome: "success",
+    }).catch(() => undefined);
   }
-  cookieStore.delete(SESSION_COOKIE_NAME);
+  await client.auth.signOut({ scope: "local" });
   redirect("/iniciar-sesion");
 }

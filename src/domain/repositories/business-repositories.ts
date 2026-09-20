@@ -11,24 +11,12 @@ import type {
 
 export interface ConsultationRepository {
   findById(id: string): Promise<Consultation | null>;
-  create(
-    value: Omit<Consultation, "id" | "humanId">,
-    idempotencyKey: string,
-  ): Promise<Consultation>;
 }
 export interface ClientRepository {
   findById(id: string): Promise<Client | null>;
-  create(
-    value: Omit<Client, "id" | "humanId">,
-    idempotencyKey: string,
-  ): Promise<Client>;
 }
 export interface CaseRepository {
   findById(id: string): Promise<LegalCase | null>;
-  create(
-    value: Omit<LegalCase, "id" | "humanId">,
-    idempotencyKey: string,
-  ): Promise<LegalCase>;
 }
 export interface DocumentRepository {
   findById(id: string): Promise<LegalDocument | null>;

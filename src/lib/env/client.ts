@@ -2,7 +2,6 @@ import { z } from "zod";
 
 const firebaseClientEnvironmentSchema = z.object({
   NEXT_PUBLIC_FIREBASE_API_KEY: z.string().min(1),
-  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: z.string().min(1),
   NEXT_PUBLIC_FIREBASE_PROJECT_ID: z.string().min(2),
   NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID: z.string().min(1),
   NEXT_PUBLIC_FIREBASE_APP_ID: z.string().min(1),
@@ -11,7 +10,9 @@ const firebaseClientEnvironmentSchema = z.object({
 
 const supabaseClientEnvironmentSchema = z.object({
   NEXT_PUBLIC_SUPABASE_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z
+    .string()
+    .startsWith("sb_publishable_"),
 });
 
 export type ClientEnvironmentSource = Record<string, string | undefined>;
@@ -19,8 +20,6 @@ export type ClientEnvironmentSource = Record<string, string | undefined>;
 function defaultFirebaseSource(): ClientEnvironmentSource {
   return {
     NEXT_PUBLIC_FIREBASE_API_KEY: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN:
-      process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
     NEXT_PUBLIC_FIREBASE_PROJECT_ID:
       process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID:
@@ -33,11 +32,14 @@ function defaultFirebaseSource(): ClientEnvironmentSource {
 function defaultSupabaseSource(): ClientEnvironmentSource {
   return {
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   };
 }
 
-export function getFirebaseClientEnvironment(source = defaultFirebaseSource()) {
+export function getFirebaseMessagingEnvironment(
+  source = defaultFirebaseSource(),
+) {
   const parsed = firebaseClientEnvironmentSchema.safeParse(source);
   if (!parsed.success) {
     throw new Error("Firebase client configuration is missing or invalid.");
@@ -45,7 +47,6 @@ export function getFirebaseClientEnvironment(source = defaultFirebaseSource()) {
 
   return {
     apiKey: parsed.data.NEXT_PUBLIC_FIREBASE_API_KEY,
-    authDomain: parsed.data.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
     projectId: parsed.data.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
     messagingSenderId: parsed.data.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     appId: parsed.data.NEXT_PUBLIC_FIREBASE_APP_ID,
@@ -53,12 +54,7 @@ export function getFirebaseClientEnvironment(source = defaultFirebaseSource()) {
   };
 }
 
-export function getOptionalSupabaseClientEnvironment(
-  source = defaultSupabaseSource(),
-) {
-  const values = Object.values(source);
-  if (values.every((value) => !value)) return undefined;
-
+export function getSupabaseClientEnvironment(source = defaultSupabaseSource()) {
   const parsed = supabaseClientEnvironmentSchema.safeParse(source);
   if (!parsed.success) {
     throw new Error("Supabase client configuration is incomplete or invalid.");
@@ -66,6 +62,6 @@ export function getOptionalSupabaseClientEnvironment(
 
   return {
     url: parsed.data.NEXT_PUBLIC_SUPABASE_URL,
-    anonKey: parsed.data.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    publishableKey: parsed.data.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY,
   };
 }

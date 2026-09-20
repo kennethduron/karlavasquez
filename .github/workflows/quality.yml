@@ -11,6 +11,8 @@ on:
       - feat/knv-public-site-polish-phase-2-1
       - feat/knv-public-site-polish-phase-2-2
       - feat/knv-final-brand-photo-phase-2-3
+      - feat/knv-infrastructure-setup-phase-2-4a
+      - feat/knv-production-cutover-phase-2-4b
 
 concurrency:
   group: quality-${{ github.ref }}
@@ -29,16 +31,18 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - uses: actions/setup-java@v4
+      - uses: supabase/setup-cli@v1
         with:
-          distribution: temurin
-          java-version: 21
+          version: latest
       - run: npm ci
+      - run: supabase start
+      - run: supabase db reset --local
+      - run: npm run supabase:lint
+      - run: npm run test:supabase:rls
       - run: npm run format:check
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
-      - run: npm run test:rules
       - run: npm run security:check
       - run: npm run build
 
@@ -51,15 +55,10 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
       - run: npm ci
       - run: npx playwright install --with-deps chromium webkit
       - run: npm run build
       - run: npm run test:e2e
-      - run: npm run test:e2e:firebase
 
   secrets:
     runs-on: ubuntu-latest
