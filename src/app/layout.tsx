@@ -37,7 +37,7 @@ export const metadata: Metadata = {
       {
         url: new URL(
           "/images/knv/opengraph-1200x630.jpg",
-          siteConfig.deploymentUrl,
+          siteConfig.canonicalUrl,
         ).toString(),
         width: 1200,
         height: 630,
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
     images: [
       new URL(
         "/images/knv/opengraph-1200x630.jpg",
-        siteConfig.deploymentUrl,
+        siteConfig.canonicalUrl,
       ).toString(),
     ],
   },
